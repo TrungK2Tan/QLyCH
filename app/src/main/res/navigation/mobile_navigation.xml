@@ -42,6 +42,9 @@
         <action
             android:id="@+id/action_login_to_home"
             app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_login_to_cart"
+            app:destination="@id/nav_cart" />
         <!-- Action to navigate to RegisterFragment -->
         <action
             android:id="@+id/action_login_to_register"

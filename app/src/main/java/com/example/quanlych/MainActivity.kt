@@ -1,8 +1,10 @@
 package com.example.quanlych
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -11,6 +13,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.quanlych.data.UserRepository
 import com.example.quanlych.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 
@@ -22,7 +25,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.fragment_home)
 
+        val userRepository = UserRepository(this)
+        val accounts = userRepository.getAllAccounts()
+
+        // Hiển thị các tài khoản trong Log hoặc sử dụng Toast
+        for (account in accounts) {
+            Log.d("MainActivity", account)
+            Toast.makeText(this, account, Toast.LENGTH_LONG).show()
+        }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
