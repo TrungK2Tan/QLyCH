@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_login">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.quanlych.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_gallery"
+        android:name="com.example.quanlych.ui.gallery.GalleryFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_cart"
+        android:name="com.example.quanlych.ui.Cart.CartFragment"
+        android:label="@string/menu_cart"
+        tools:layout="@layout/fragment_cart" >
+        <action
+            android:id="@+id/action_nav_cart_to_nav_thanhtoan"
+            app:destination="@id/nav_thanhtoan" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.example.quanlych.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/nav_login"
+        android:name="com.example.quanlych.ui.login.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <!-- Action to navigate to HomeFragment -->
+        <action
+            android:id="@+id/action_login_to_home"
+            app:destination="@id/nav_home" />
+        <!-- Action to navigate to RegisterFragment -->
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/nav_register" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_productdetails"
+        android:name="com.example.quanlych.ui.gallery.ProductDetailFragment"
+        android:label="@string/menu_productdetails"
+        tools:layout="@layout/fragment_productdetails" />
+
+    <fragment
+        android:id="@+id/nav_register"
+        android:name="com.example.quanlych.ui.login.RegisterFragment"
+        android:label="Register"
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_register_to_login"
+            app:destination="@id/nav_login" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_thanhtoan"
+        android:name="com.example.quanlych.ui.order.OrderFragment"
+        android:label="@string/menu_thanhtoan"
+        tools:layout="@layout/fragment_order" />
+
+</navigation>
