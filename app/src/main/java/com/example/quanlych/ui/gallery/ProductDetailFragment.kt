@@ -38,25 +38,25 @@ class ProductDetailFragment : Fragment() {
         val txtTotalPrice: TextView = view.findViewById(R.id.txt_total_price)
 
         // Set product details (example)
-        productName.text = "Example Product"
-        productPrice.text = "$${productPriceValue}"
+        productName.text = "San Pham 1"
+        productPrice.text = "${productPriceValue}đ"
         productImage.setImageResource(R.drawable.banner1)
-        productDescription.text = "This is an example product description."
+        productDescription.text = "San Pham nay la san pham xin."
 
         // Set initial total price
-        txtTotalPrice.text = "Total: $${productPriceValue * quantity}"
+        txtTotalPrice.text = "Total: ${productPriceValue * quantity}đ"
 
         btnIncrement.setOnClickListener {
             quantity++
             txtQuantity.text = quantity.toString()
-            txtTotalPrice.text = "Total: $${String.format("%.2f", productPriceValue * quantity)}"
+            txtTotalPrice.text = "Total: ${String.format("%.2f", productPriceValue * quantity)}đ"
         }
 
         btnDecrement.setOnClickListener {
             if (quantity > 1) {
                 quantity--
                 txtQuantity.text = quantity.toString()
-                txtTotalPrice.text = "Total: $${String.format("%.2f", productPriceValue * quantity)}"
+                txtTotalPrice.text = "Total: ${String.format("%.2f", productPriceValue * quantity)}đ"
             }
         }
 

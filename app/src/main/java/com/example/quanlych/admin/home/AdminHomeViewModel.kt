@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 class AdminHomeViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is Adminhome Fragment"
+        value = "Xin Chao"
     }
     val text: LiveData<String> = _text
 }

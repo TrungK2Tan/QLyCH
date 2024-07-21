@@ -42,12 +42,12 @@ class GalleryFragment : Fragment() {
 
         // Create a sample product list
         val products = listOf(
-            Product(R.drawable.banner1, "Product 1", "10.000đ", 1),
-            Product(R.drawable.banner2, "Product 2", "20.000đ", 1),
-            Product(R.drawable.banner3, "Product 3", "30.000đ", 1),
-            Product(R.drawable.banner1, "Product 1", "10.000đ", 1),
-            Product(R.drawable.banner2, "Product 2", "20.000đ", 1),
-            Product(R.drawable.banner3, "Product 3", "30.000đ", 1)
+            Product(R.drawable.banner1, "San Pham 1", "10.000đ", 1),
+            Product(R.drawable.banner2, "San Pham 2", "20.000đ", 1),
+            Product(R.drawable.banner3, "San Pham 3", "30.000đ", 1),
+            Product(R.drawable.banner1, "San Pham 1", "10.000đ", 1),
+            Product(R.drawable.banner2, "San Pham 2", "20.000đ", 1),
+            Product(R.drawable.banner3, "San Pham 3", "30.000đ", 1)
         )
 
         val adapter = ProductAdapter(products)

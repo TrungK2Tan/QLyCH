@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 class RegisterViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is register Fragment"
+        value = "Đăng ký"
     }
     val text: LiveData<String> = _text
 }

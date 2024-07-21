@@ -38,9 +38,9 @@ class CartFragment : Fragment() {
 
         // Initialize product list
         productList = listOf(
-            Product(R.drawable.banner1, "Product 1", "10.000đ", 1),
-            Product(R.drawable.banner2, "Product 2", "20.000đ", 1),
-            Product(R.drawable.banner3, "Product 3", "30.000đ", 1)
+            Product(R.drawable.banner1, "SanPham 1", "10.000đ", 1),
+            Product(R.drawable.banner2, "SanPham 2", "20.000đ", 1),
+            Product(R.drawable.banner3, "SanPham 3", "30.000đ", 1)
         )
 
         // Set up RecyclerView
