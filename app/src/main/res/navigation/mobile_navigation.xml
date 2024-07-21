@@ -10,13 +10,11 @@
         android:name="com.example.quanlych.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
-
     <fragment
         android:id="@+id/nav_gallery"
         android:name="com.example.quanlych.ui.gallery.GalleryFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_gallery" />
-
     <fragment
         android:id="@+id/nav_cart"
         android:name="com.example.quanlych.ui.Cart.CartFragment"
@@ -26,37 +24,31 @@
             android:id="@+id/action_nav_cart_to_nav_thanhtoan"
             app:destination="@id/nav_thanhtoan" />
     </fragment>
-
     <fragment
         android:id="@+id/nav_slideshow"
         android:name="com.example.quanlych.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
-
     <fragment
         android:id="@+id/nav_login"
         android:name="com.example.quanlych.ui.login.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_login">
-        <!-- Action to navigate to HomeFragment -->
         <action
             android:id="@+id/action_login_to_home"
             app:destination="@id/nav_home" />
         <action
-            android:id="@+id/action_login_to_cart"
-            app:destination="@id/nav_cart" />
-        <!-- Action to navigate to RegisterFragment -->
+            android:id="@+id/action_login_to_admin_home"
+            app:destination="@id/nav_admin_home" />
         <action
             android:id="@+id/action_login_to_register"
             app:destination="@id/nav_register" />
     </fragment>
-
     <fragment
         android:id="@+id/nav_productdetails"
         android:name="com.example.quanlych.ui.gallery.ProductDetailFragment"
         android:label="@string/menu_productdetails"
         tools:layout="@layout/fragment_productdetails" />
-
     <fragment
         android:id="@+id/nav_register"
         android:name="com.example.quanlych.ui.login.RegisterFragment"
@@ -71,5 +63,43 @@
         android:name="com.example.quanlych.ui.order.OrderFragment"
         android:label="@string/menu_thanhtoan"
         tools:layout="@layout/fragment_order" />
-
+   <!--ADMIN -->
+    <fragment
+        android:id="@+id/nav_admin_home"
+        android:name="com.example.quanlych.admin.home.AdminHomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_admin_home" >
+    <action
+        android:id="@+id/action_home_to_chart"
+        app:destination="@id/nav_admin_chart" />
+        <action
+            android:id="@+id/action_home_to_product"
+            app:destination="@id/nav_admin_product" />
+        <action
+            android:id="@+id/action_home_to_user"
+            app:destination="@id/nav_admin_user" />
+        <action
+            android:id="@+id/action_home_to_order"
+            app:destination="@id/nav_admin_order" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_admin_chart"
+        android:name="com.example.quanlych.admin.chart.AdminChartFragment"
+        android:label="@string/menu_chart"
+        tools:layout="@layout/fragment_admin_chart" />
+    <fragment
+        android:id="@+id/nav_admin_product"
+        android:name="com.example.quanlych.admin.product.AdminProductFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_admin_product" />
+    <fragment
+        android:id="@+id/nav_admin_user"
+        android:name="com.example.quanlych.admin.user.AdminUserFragment"
+        android:label="@string/menu_user"
+        tools:layout="@layout/fragment_admin_user" />
+    <fragment
+        android:id="@+id/nav_admin_order"
+        android:name="com.example.quanlych.admin.order.AdminOrderFragment"
+        android:label="@string/menu_order"
+        tools:layout="@layout/fragement_admin_order" />
 </navigation>

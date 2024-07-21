@@ -22,7 +22,7 @@ class UserRepository(context: Context) {
 
         val newRowId = db.insert("TaiKhoan", null, values)
 
-        // Gán quyền "quản lý"
+        // Gán quyền "người dùng"
         val query = "SELECT MaQuyen FROM Quyen WHERE TenQuyen = 'người dùng'"
         val cursor = db.rawQuery(query, null)
         if (cursor.moveToFirst()) {
@@ -36,17 +36,17 @@ class UserRepository(context: Context) {
         cursor.close()
     }
 
-
     // Đăng nhập người dùng
-    fun loginUser(email: String, password: String): Boolean {
+    fun loginUser(email: String, password: String): Pair<Boolean, String?> {
         val db = dbHelper.readableDatabase
 
         // Kiểm tra thông tin đăng nhập
-        val query = "SELECT MaTaiKhoan FROM TaiKhoan WHERE Email = ? AND MatKhau = ?"
+        val query = "SELECT MaTaiKhoan, TenNguoiDung FROM TaiKhoan WHERE Email = ? AND MatKhau = ?"
         val cursor = db.rawQuery(query, arrayOf(email, password))
 
         return if (cursor.moveToFirst()) {
             val maTaiKhoan = cursor.getLong(0)
+            val tenNguoiDung = cursor.getString(1)
 
             // Kiểm tra quyền của tài khoản
             val roleQuery = "SELECT TenQuyen FROM ChiTietTaiKhoan ct JOIN Quyen q ON ct.MaQuyen = q.MaQuyen WHERE ct.MaTaiKhoan = ?"
@@ -55,38 +55,30 @@ class UserRepository(context: Context) {
             if (roleCursor.moveToFirst()) {
                 val tenQuyen = roleCursor.getString(0)
                 roleCursor.close()
-                if (tenQuyen == "quản lý") {
-                    // Nếu quyền là "quản lý", trả về true để chuyển hướng đến trang Home
-                    true
-                } else {
-                    // Quyền không phải "quản lý"
-                    false
-                }
+                Pair(true, tenQuyen)
             } else {
-                // Không tìm thấy quyền
-                false
+                Pair(false, null)
             }
         } else {
-            // Đăng nhập không thành công
-            false
+            Pair(false, null)
         }
     }
-    // Lấy tất cả các tài khoản
-    fun getAllAccounts(): List<String> {
+    // Fetch all users from the database
+    fun getAllUsers(): List<User> {
+        val users = mutableListOf<User>()
         val db = dbHelper.readableDatabase
-        val accounts = mutableListOf<String>()
-
-        val cursor: Cursor = db.rawQuery("SELECT * FROM ChiTietTaiKhoan", null)
+        val cursor: Cursor = db.rawQuery("SELECT * FROM TaiKhoan", null)
         if (cursor.moveToFirst()) {
             do {
                 val id = cursor.getLong(cursor.getColumnIndexOrThrow("MaTaiKhoan"))
-                val idQuyen = cursor.getString(cursor.getColumnIndexOrThrow("MaQuyen"))
-
-                accounts.add("MaTaiKhoan: $id, MaQuyen: $idQuyen")
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("TenNguoiDung"))
+                val email = cursor.getString(cursor.getColumnIndexOrThrow("Email"))
+                val password = cursor.getString(cursor.getColumnIndexOrThrow("MatKhau"))
+                users.add(User(id, name, email, password))
             } while (cursor.moveToNext())
         }
         cursor.close()
-        return accounts
+        return users
     }
-
 }
+data class User(val id: Long, val name: String, val email: String, val password: String)

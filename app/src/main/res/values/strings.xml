@@ -16,6 +16,9 @@
     <string name="menu_logout">Đăng xuất</string>
     <string name="menu_productdetails">Chi tiết sản phẩm</string>
     <string name="menu_thanhtoan">Thanh toán</string>
-
+<!-- ADMIN-->
+    <string name="menu_chart">Thống kê</string>
+    <string name="menu_order">Đơn hàng</string>
+    <string name="menu_user">Tài khoản</string>
 
 </resources>

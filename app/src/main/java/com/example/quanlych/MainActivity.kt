@@ -1,10 +1,10 @@
 package com.example.quanlych
 
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.View
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
@@ -13,7 +13,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.quanlych.data.UserRepository
 import com.example.quanlych.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 
@@ -25,16 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_home)
 
-        val userRepository = UserRepository(this)
-        val accounts = userRepository.getAllAccounts()
-
-        // Hiển thị các tài khoản trong Log hoặc sử dụng Toast
-        for (account in accounts) {
-            Log.d("MainActivity", account)
-            Toast.makeText(this, account, Toast.LENGTH_LONG).show()
-        }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -56,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         // Add a listener to change the toolbar visibility based on the destination
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.nav_login, R.id.nav_register -> {
+                R.id.nav_login, R.id.nav_register, R.id.nav_admin_home ,R.id.nav_admin_chart,R.id.nav_admin_user,R.id.nav_admin_product,R.id.nav_admin_order-> {
                     binding.appBarMain.toolbar.visibility = View.GONE
                 }
                 else -> {
@@ -74,6 +64,21 @@ class MainActivity : AppCompatActivity() {
                     drawerLayout.closeDrawers()
                     true
                 }
+                R.id.nav_logout -> {
+                    // Clear user data from SharedPreferences
+                    val sharedPref = getSharedPreferences("UserPref", Context.MODE_PRIVATE)
+                    with(sharedPref.edit()) {
+                        clear()
+                        apply()
+                    }
+
+                    // Navigate to login screen
+                    navController.navigate(R.id.nav_login)
+
+                    // Close the drawer
+                    drawerLayout.closeDrawers()
+                    true
+                }
                 else -> {
                     // Handle other menu items
                     navController.navigate(item.itemId)
@@ -82,6 +87,19 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        // Update Navigation Header with user info
+        updateNavHeader()
+    }
+
+    public fun updateNavHeader() {
+        val headerView = binding.navView.getHeaderView(0)
+        val navUsername = headerView.findViewById<TextView>(R.id.nav_username)
+        val navEmail = headerView.findViewById<TextView>(R.id.nav_email)
+
+        val sharedPref = getSharedPreferences("UserPref", Context.MODE_PRIVATE)
+        navUsername.text = sharedPref.getString("username", "Username")
+        navEmail.text = sharedPref.getString("email", "email@example.com")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

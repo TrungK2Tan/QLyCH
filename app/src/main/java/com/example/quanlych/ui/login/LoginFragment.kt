@@ -1,9 +1,12 @@
 package com.example.quanlych.ui.login
 
+
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.quanlych.R
@@ -27,12 +30,26 @@ class LoginFragment : Fragment() {
             val email = binding.username.text.toString()
             val password = binding.password.text.toString()
             val userRepository = UserRepository(requireContext())
-            if (userRepository.loginUser(email, password)) {
-                // Nếu quyền là "quản lý", chuyển hướng đến Home
-                findNavController().navigate(R.id.action_login_to_home)
+            val (isLoginSuccessful, role) = userRepository.loginUser(email, password)
+
+            if (isLoginSuccessful) {
+                // Save user information to SharedPreferences
+                val sharedPref = requireActivity().getSharedPreferences("UserPref", Context.MODE_PRIVATE)
+                with (sharedPref.edit()) {
+                    putString("username", email) // Assuming email as username
+                    putString("email", email)
+                    apply()
+                }
+
+                // Navigate based on user role
+                if (role == "quản lý") {
+                    findNavController().navigate(R.id.action_login_to_admin_home)
+                } else {
+                    findNavController().navigate(R.id.action_login_to_home)
+                }
             } else {
-                findNavController().navigate(R.id.action_login_to_cart)
-                // Hiển thị thông báo lỗi hoặc chuyển hướng đến một trang khác nếu cần
+                // Show error message
+                Toast.makeText(requireContext(), "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -50,3 +67,5 @@ class LoginFragment : Fragment() {
         _binding = null
     }
 }
+
+
