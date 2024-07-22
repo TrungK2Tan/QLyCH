@@ -80,5 +80,26 @@ class UserRepository(context: Context) {
         cursor.close()
         return users
     }
+    // Search for users by name or email
+    fun searchUsers(query: String): List<User> {
+        val userList = mutableListOf<User>()
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM TaiKhoan WHERE TenNguoiDung LIKE ? OR Email LIKE ?",
+            arrayOf("%$query%", "%$query%")
+        )
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow("MaTaiKhoan"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("TenNguoiDung"))
+                val email = cursor.getString(cursor.getColumnIndexOrThrow("Email"))
+                val password = cursor.getString(cursor.getColumnIndexOrThrow("MatKhau"))
+                userList.add(User(id, name, email, password))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return userList
+    }
+
 }
 data class User(val id: Long, val name: String, val email: String, val password: String)

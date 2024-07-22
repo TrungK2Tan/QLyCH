@@ -54,7 +54,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        //
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val fab: View = findViewById(R.id.fab)
 
+            when (destination.id) {
+                R.id.nav_admin_user -> fab.visibility = View.GONE
+                else -> fab.visibility = View.VISIBLE
+            }
+        }
         // Handle navigation item clicks
         navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {

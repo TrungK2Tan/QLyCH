@@ -1,38 +1,41 @@
 package com.example.quanlych.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quanlych.R
 import com.example.quanlych.data.User
+import com.example.quanlych.databinding.AdminItemUserBinding
 
-class UserAdapter(private val userList: List<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
-    class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val username: TextView = itemView.findViewById(R.id.username)
-        val email: TextView = itemView.findViewById(R.id.email)
-        val userImage: ImageView = itemView.findViewById(R.id.UserImage)
-        val imgDetails: ImageView = itemView.findViewById(R.id.imgdetails)
+class UserAdapter(private var userList: List<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
+
+    inner class UserViewHolder(private val binding: AdminItemUserBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(user: User) {
+            binding.username.text = user.name
+            binding.email.text = user.email
+            // Set default user image
+            binding.UserImage.setImageResource(R.drawable.people)
+            // Set details image
+            binding.imgdetails.setImageResource(R.drawable.details)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.admin_item_user, parent, false)
-        return UserViewHolder(itemView)
+        val binding = AdminItemUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return UserViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        val currentItem = userList[position]
-        holder.username.text = currentItem.name
-        holder.email.text = currentItem.email
-        // Set default user image
-        holder.userImage.setImageResource(R.drawable.people)
-        // Set details image
-        holder.imgDetails.setImageResource(R.drawable.details)
+        holder.bind(userList[position])
     }
 
-    override fun getItemCount() = userList.size
+    override fun getItemCount(): Int {
+        return userList.size
+    }
+
+    fun updateData(newList: List<User>) {
+        userList = newList
+        notifyDataSetChanged()
+    }
 }
