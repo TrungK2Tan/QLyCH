@@ -34,9 +34,9 @@ class CartAdapter(
 
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
         val product = productList[position]
-        holder.productImage.setImageResource(product.imageResId)
+        holder.productImage.setImageResource(product.imageResource)
         holder.productName.text = product.name
-        holder.productPrice.text = product.price
+        holder.productPrice.text = product.price.toString()
         holder.txtQuantity.text = product.quantity.toString()
         holder.checkboxSelectProduct.isChecked = product.isSelected
 

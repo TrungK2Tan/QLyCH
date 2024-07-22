@@ -38,9 +38,9 @@ class CartFragment : Fragment() {
 
         // Initialize product list
         productList = listOf(
-            Product(R.drawable.banner1, "SanPham 1", "10.000đ", 1),
-            Product(R.drawable.banner2, "SanPham 2", "20.000đ", 1),
-            Product(R.drawable.banner3, "SanPham 3", "30.000đ", 1)
+            Product("1", "SanPham 1", "xin qua", R.drawable.banner1, 100.0, 10, isSelected = false),
+            Product("2", "SanPham 2", "xin qua", R.drawable.banner2, 10000.0, 10, isSelected = false),
+            Product("3", "SanPham 3", "xin qua", R.drawable.banner3, 1000.0, 10, isSelected = false)
         )
 
         // Set up RecyclerView
@@ -49,9 +49,10 @@ class CartFragment : Fragment() {
         binding.recycleviewgiohang.adapter = cartAdapter
 
         updateTotalPrice()
-// Set up click listener for login button
+
+        // Set up click listener for the buy button
         binding.btnmuahang.setOnClickListener {
-            // Navigate to the Home Fragment on login button click
+            // Navigate to the payment fragment on buy button click
             findNavController().navigate(R.id.action_nav_cart_to_nav_thanhtoan)
         }
         return root
@@ -66,13 +67,13 @@ class CartFragment : Fragment() {
     }
 
     private fun updateTotalPrice() {
-        var totalPrice = 0
+        var totalPrice = 0.0
         for (product in productList) {
             if (product.isSelected) {
-                totalPrice += product.quantity * product.price.removeSuffix("đ").replace(".", "").toInt()
+                totalPrice += product.quantity * product.price
             }
         }
-        binding.txttongtien.text = "${totalPrice}đ"
+        binding.txttongtien.text = String.format("%.2fđ", totalPrice)
     }
 
     override fun onDestroyView() {
