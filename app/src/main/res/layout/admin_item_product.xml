@@ -8,11 +8,10 @@
     android:padding="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="369dp"
-        android:layout_height="107dp">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <ImageView
-
             android:id="@+id/imgdetails"
             android:layout_width="40dp"
             android:layout_height="37dp"
@@ -24,8 +23,7 @@
             app:layout_constraintStart_toEndOf="@+id/productImage"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.166"
-            android:src="@drawable/details"
-            />
+            android:src="@drawable/details" />
 
         <ImageView
             android:id="@+id/imagedelete"
@@ -37,8 +35,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.464"
-            app:layout_constraintStart_toEndOf="@+id/productImage"
-            />
+            app:layout_constraintStart_toEndOf="@+id/productImage" />
 
         <TextView
             android:id="@+id/productDescription"
@@ -96,12 +93,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="vnd"
-            android:textSize="10dp"
+            android:textSize="10sp"
             app:layout_constraintEnd_toStartOf="@+id/productImage"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/productPrice"
             app:layout_constraintTop_toBottomOf="@+id/productDescription" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </LinearLayout>

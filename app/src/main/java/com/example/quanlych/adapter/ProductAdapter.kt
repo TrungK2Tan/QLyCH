@@ -28,7 +28,7 @@ class ProductAdapter(private val productList: List<Product>) :
         val product = productList[position]
         holder.productImage.setImageResource(product.imageResId)
         holder.productName.text = product.name
-        holder.productPrice.text = "${product.price} "
+        holder.productPrice.text = "${product.price} $"
     }
 
     override fun getItemCount(): Int {
