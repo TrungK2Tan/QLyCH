@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.ViewFlipper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.quanlych.R
+import com.example.quanlych.data.DatabaseHelper
 import com.example.quanlych.databinding.FragmentHomeBinding
 import com.example.quanlych.model.Product
 
@@ -33,25 +33,18 @@ class HomeFragment : Fragment() {
         viewFlipper.startFlipping()
 
         // Set up TextView from ViewModel
-        val textView: TextView = binding.textHome
         homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+            binding.textHome.text = it
         }
 
-        // Set up RecyclerView with GridLayoutManager
-        val recyclerView = binding.recycleview
-        recyclerView.layoutManager = GridLayoutManager(context, 2) // 2 columns
+        // Initialize DatabaseHelper and fetch products
+        val databaseHelper = DatabaseHelper(requireContext())
+        val products = databaseHelper.getAllProducts()
 
-//        // Create a sample product list
-//        val products = listOf(
-//            Product(R.drawable.banner1, "San Pham 3", "10.000đ", 1),
-//            Product(R.drawable.banner2, "San Pham 1", "20.000đ", 1),
-//            Product(R.drawable.banner3, "San Pham 2", "30.000đ", 1),
-//            Product(R.drawable.banner3, "San Pham 4", "30.000đ", 1)
-//        )
-//
-//        val adapter = ProductAdapter(products)
-//        recyclerView.adapter = adapter
+        // Set up RecyclerView with GridLayoutManager
+        binding.recycleview.layoutManager = GridLayoutManager(context, 2) // 2 columns
+        val adapter = ProductAdapter(products)
+        binding.recycleview.adapter = adapter
 
         return root
     }
