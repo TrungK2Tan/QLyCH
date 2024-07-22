@@ -22,6 +22,7 @@ class ProductAdapter(
             binding.productName.text = product.name
             binding.productDescription.text = product.description
             binding.productPrice.text = product.price.toString()
+            binding.productQuantity.text = product.quantity.toString()
             binding.productImage.setImageResource(product.imageResource)
 
             binding.editButton.setOnClickListener { listener.onEditClick(product) }

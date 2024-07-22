@@ -36,6 +36,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Price" />
+
+        <!-- Add this TextView for displaying quantity -->
+        <TextView
+            android:id="@+id/productQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quantity" />
     </LinearLayout>
 
     <ImageButton

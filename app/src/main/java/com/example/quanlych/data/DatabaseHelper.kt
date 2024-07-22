@@ -135,6 +135,26 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         db.insert(TABLE_SANPHAM, null, values)
     }
+    // Method to fetch a product by its ID
+    fun getProductById(productId: Int): Product? {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_SANPHAM WHERE MaSanPham = ?", arrayOf(productId.toString()))
+
+        return if (cursor.moveToFirst()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow("MaSanPham"))
+            val name = cursor.getString(cursor.getColumnIndexOrThrow("TenSanPham"))
+            val description = cursor.getString(cursor.getColumnIndexOrThrow("MoTa"))
+            val imageResource = cursor.getInt(cursor.getColumnIndexOrThrow("HinhAnh"))
+            val price = cursor.getDouble(cursor.getColumnIndexOrThrow("Gia"))
+            val quantity = cursor.getInt(cursor.getColumnIndexOrThrow("SoLuong"))
+
+            cursor.close()
+            Product(id.toString(), name, description, imageResource, price, quantity)
+        } else {
+            cursor.close()
+            null
+        }
+    }
 
 
     // Method to delete a product

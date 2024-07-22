@@ -21,6 +21,7 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var productAdapter: ProductAdapter
     private var productList: List<Product> = listOf()
+    private var filteredList: List<Product> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,25 +41,48 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
         binding.floatingActionButton.setOnClickListener {
             findNavController().navigate(R.id.action_admin_to_addproduct)
         }
+
+        binding.searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                filterProducts(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterProducts(newText)
+                return true
+            }
+        })
     }
 
     private fun loadProducts() {
         try {
             productList = databaseHelper.getAllProducts()
-            if (productList.isEmpty()) {
-                Log.d("AdminProductFragment", "No products found.")
-            } else {
-                Log.d("AdminProductFragment", "Products loaded successfully. Count: ${productList.size}")
-            }
-            productAdapter = ProductAdapter(productList, this)
-            binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            binding.recyclerView.adapter = productAdapter
+            filteredList = productList // Initialize filtered list
+            updateRecyclerView()
         } catch (e: Exception) {
             Log.e("AdminProductFragment", "Error loading products", e)
         }
     }
 
+    private fun filterProducts(query: String?) {
+        val filtered = if (query.isNullOrEmpty()) {
+            productList
+        } else {
+            productList.filter { product ->
+                product.name.contains(query, ignoreCase = true) ||
+                        product.description.contains(query, ignoreCase = true)
+            }
+        }
+        filteredList = filtered
+        updateRecyclerView()
+    }
 
+    private fun updateRecyclerView() {
+        productAdapter = ProductAdapter(filteredList, this)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = productAdapter
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -66,7 +90,10 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
     }
 
     override fun onEditClick(product: Product) {
-        // Handle edit product action
+        val bundle = Bundle().apply {
+            putInt("productId", product.id.toInt())
+        }
+        findNavController().navigate(R.id.action_admin_to_editproduct, bundle)
     }
 
     override fun onDeleteClick(product: Product) {

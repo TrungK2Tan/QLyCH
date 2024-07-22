@@ -95,6 +95,9 @@
         <action
             android:id="@+id/action_admin_to_addproduct"
             app:destination="@id/addProductFragment" />
+        <action
+            android:id="@+id/action_admin_to_editproduct"
+            app:destination="@id/editProductFragment" />
     </fragment>
     <fragment
         android:id="@+id/addProductFragment"
@@ -102,6 +105,14 @@
         android:label="@string/add_product">
         <action
             android:id="@+id/action_addproduct_to_admin"
+            app:destination="@id/nav_admin_product" />
+    </fragment>
+    <fragment
+        android:id="@+id/editProductFragment"
+        android:name="com.example.quanlych.admin.product.EditProductFragment"
+        android:label="@string/edit">
+        <action
+            android:id="@+id/action_editproduct_to_admin"
             app:destination="@id/nav_admin_product" />
     </fragment>
     <fragment
