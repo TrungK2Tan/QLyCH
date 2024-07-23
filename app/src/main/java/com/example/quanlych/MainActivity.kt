@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             val fab: View = findViewById(R.id.fab)
 
             when (destination.id) {
-                R.id.nav_admin_user ,R.id.nav_admin_product -> fab.visibility = View.GONE
+                R.id.nav_admin_user ,R.id.nav_admin_product,R.id.nav_login, R.id.nav_register-> fab.visibility = View.GONE
                 else -> fab.visibility = View.VISIBLE
             }
         }

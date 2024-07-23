@@ -1,9 +1,11 @@
 package com.example.quanlych.admin.product
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+
+
+import com.bumptech.glide.Glide
 import com.example.quanlych.databinding.AdminItemProductBinding
 import com.example.quanlych.model.Product
 
@@ -23,7 +25,11 @@ class ProductAdapter(
             binding.productDescription.text = product.description
             binding.productPrice.text = product.price.toString()
             binding.productQuantity.text = product.quantity.toString()
-            binding.productImage.setImageResource(product.imageResource)
+
+            // Use Glide to load the image
+            Glide.with(binding.productImage.context)
+                .load(product.imageResource)
+                .into(binding.productImage)
 
             binding.editButton.setOnClickListener { listener.onEditClick(product) }
             binding.deleteButton.setOnClickListener { listener.onDeleteClick(product) }

@@ -14,7 +14,11 @@
         android:id="@+id/nav_gallery"
         android:name="com.example.quanlych.ui.gallery.GalleryFragment"
         android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        tools:layout="@layout/fragment_gallery">
+        <action
+            android:id="@+id/action_gallery_to_productdetails"
+            app:destination="@id/nav_productdetails" />
+    </fragment>
     <fragment
         android:id="@+id/nav_cart"
         android:name="com.example.quanlych.ui.Cart.CartFragment"

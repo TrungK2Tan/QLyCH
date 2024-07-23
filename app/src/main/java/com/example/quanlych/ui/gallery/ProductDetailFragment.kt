@@ -10,22 +10,24 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.quanlych.R
+import com.example.quanlych.model.Product
 
 class ProductDetailFragment : Fragment() {
 
     private var quantity: Int = 1
-    private val productPriceValue: Double = 99.99 // Set the product price value
+    private lateinit var product: Product
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_productdetails, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        product = arguments?.getParcelable("product") ?: return
 
         val productName: TextView = view.findViewById(R.id.product_name)
         val productPrice: TextView = view.findViewById(R.id.product_price)
@@ -37,32 +39,30 @@ class ProductDetailFragment : Fragment() {
         val txtQuantity: TextView = view.findViewById(R.id.txt_quantity)
         val txtTotalPrice: TextView = view.findViewById(R.id.txt_total_price)
 
-        // Set product details (example)
-        productName.text = "San Pham 1"
-        productPrice.text = "${productPriceValue}đ"
-        productImage.setImageResource(R.drawable.banner1)
-        productDescription.text = "San Pham nay la san pham xin."
+        productName.text = product.name
+        productPrice.text = "${product.price}đ"
+        productImage.setImageResource(R.drawable.banner1) // Replace with actual image loading logic
+        productDescription.text = product.description
 
-        // Set initial total price
-        txtTotalPrice.text = "Total: ${productPriceValue * quantity}đ"
+        txtTotalPrice.text = "Total: ${product.price * quantity}đ"
 
         btnIncrement.setOnClickListener {
             quantity++
             txtQuantity.text = quantity.toString()
-            txtTotalPrice.text = "Total: ${String.format("%.2f", productPriceValue * quantity)}đ"
+            txtTotalPrice.text = "Total: ${String.format("%.2f", product.price * quantity)}đ"
         }
 
         btnDecrement.setOnClickListener {
             if (quantity > 1) {
                 quantity--
                 txtQuantity.text = quantity.toString()
-                txtTotalPrice.text = "Total: ${String.format("%.2f", productPriceValue * quantity)}đ"
+                txtTotalPrice.text = "Total: ${String.format("%.2f", product.price * quantity)}đ"
             }
         }
 
         addToCartButton.setOnClickListener {
-            // Handle add to cart functionality
             Toast.makeText(context, "Thêm vào giỏ hàng với số lượng $quantity", Toast.LENGTH_SHORT).show()
         }
     }
 }
+

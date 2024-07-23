@@ -1,3 +1,4 @@
+// HomeFragment.kt
 package com.example.quanlych.ui.home
 
 import android.os.Bundle
@@ -43,7 +44,12 @@ class HomeFragment : Fragment() {
 
         // Set up RecyclerView with GridLayoutManager
         binding.recycleview.layoutManager = GridLayoutManager(context, 2) // 2 columns
-        val adapter = ProductAdapter(products)
+        val adapter = ProductAdapter(products, object : ProductAdapter.OnItemClickListener {
+            override fun onItemClick(product: Product) {
+                // Handle item click here
+                // For example: show a Toast or navigate to a detail screen
+            }
+        })
         binding.recycleview.adapter = adapter
 
         return root

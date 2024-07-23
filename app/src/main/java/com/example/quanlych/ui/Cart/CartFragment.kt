@@ -38,9 +38,9 @@ class CartFragment : Fragment() {
 
         // Initialize product list
         productList = listOf(
-            Product("1", "SanPham 1", "xin qua", R.drawable.banner1, 100.0, 10, isSelected = false),
-            Product("2", "SanPham 2", "xin qua", R.drawable.banner2, 10000.0, 10, isSelected = false),
-            Product("3", "SanPham 3", "xin qua", R.drawable.banner3, 1000.0, 10, isSelected = false)
+            Product(1, "SanPham 1", "xin qua", "drawable/banner1.png", 100.0, 10),
+            Product(2, "SanPham 2", "xin qua", "drawable/banner2.png", 10000.0, 10),
+            Product(3, "SanPham 3", "xin qua", "drawable/banner3.png", 1000.0, 10)
         )
 
         // Set up RecyclerView

@@ -63,10 +63,10 @@ class EditProductFragment : Fragment() {
 
         if (price != null && quantity != null) {
             val product = Product(
-                id = productId.toString(),
+                id = productId,  // Use Int here
                 name = name,
                 description = description,
-                imageResource = 0, // Default or handle if image is needed
+                imageResource = R.drawable.banner3.toString(), // Provide a default or appropriate resource
                 price = price,
                 quantity = quantity
             )

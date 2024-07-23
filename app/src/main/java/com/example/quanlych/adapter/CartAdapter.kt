@@ -33,32 +33,9 @@ class CartAdapter(
     }
 
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
-        val product = productList[position]
-        holder.productImage.setImageResource(product.imageResource)
-        holder.productName.text = product.name
-        holder.productPrice.text = product.price.toString()
-        holder.txtQuantity.text = product.quantity.toString()
-        holder.checkboxSelectProduct.isChecked = product.isSelected
-
-        holder.btnIncrement.setOnClickListener {
-            product.quantity++
-            holder.txtQuantity.text = product.quantity.toString()
-            onQuantityChanged(product)
-        }
-
-        holder.btnDecrement.setOnClickListener {
-            if (product.quantity > 1) {
-                product.quantity--
-                holder.txtQuantity.text = product.quantity.toString()
-                onQuantityChanged(product)
-            }
-        }
-
-        holder.checkboxSelectProduct.setOnCheckedChangeListener { _, isChecked ->
-            product.isSelected = isChecked
-            onProductChecked(product, isChecked)
-        }
+        TODO("Not yet implemented")
     }
+
 
     override fun getItemCount(): Int = productList.size
 }

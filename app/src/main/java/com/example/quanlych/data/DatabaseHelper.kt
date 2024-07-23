@@ -11,13 +11,16 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "quanlych.db"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 3
 
         // Table names
         private const val TABLE_SANPHAM = "SanPham"
         private const val TABLE_TAIKHOAN = "TaiKhoan"
         private const val TABLE_QUYEN = "Quyen"
         private const val TABLE_CHITIETTAIKHOAN = "ChiTietTaiKhoan"
+        private const val TABLE_HOADON = "HoaDon"
+        private const val TABLE_HINHTHUCTHANHTOAN = "HinhThucThanhToan"
+        private const val TABLE_CHITIETHOADON = "ChiTietHoaDon"
 
         // Create table statements
         private const val CREATE_TABLE_SANPHAM = """
@@ -57,6 +60,40 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 FOREIGN KEY(MaQuyen) REFERENCES $TABLE_QUYEN(MaQuyen)
             )
         """
+
+        private const val CREATE_TABLE_HOADON = """
+            CREATE TABLE $TABLE_HOADON (
+                MaHoaDon INTEGER PRIMARY KEY AUTOINCREMENT,
+                MaTaiKhoan INTEGER,
+                NgayLap TEXT,
+                TongTien REAL,
+                TrangThai INTEGER,
+                DiaChi TEXT,
+                SoDienThoai TEXT,
+                MaHinhThuc INTEGER,
+                FOREIGN KEY(MaTaiKhoan) REFERENCES $TABLE_TAIKHOAN(MaTaiKhoan),
+                FOREIGN KEY(MaHinhThuc) REFERENCES $TABLE_HINHTHUCTHANHTOAN(MaHinhThuc)
+            )
+        """
+
+        private const val CREATE_TABLE_HINHTHUCTHANHTOAN = """
+            CREATE TABLE $TABLE_HINHTHUCTHANHTOAN (
+                MaHinhThuc INTEGER PRIMARY KEY AUTOINCREMENT,
+                TenHinhThuc TEXT
+            )
+        """
+
+        private const val CREATE_TABLE_CHITIETHOADON = """
+            CREATE TABLE $TABLE_CHITIETHOADON (
+                MaHoaDon INTEGER,
+                MaSanPham INTEGER,
+                SoLuong INTEGER,
+                Gia REAL,
+                PRIMARY KEY (MaHoaDon, MaSanPham),
+                FOREIGN KEY(MaHoaDon) REFERENCES $TABLE_HOADON(MaHoaDon),
+                FOREIGN KEY(MaSanPham) REFERENCES $TABLE_SANPHAM(MaSanPham)
+            )
+        """
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -64,18 +101,53 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.execSQL(CREATE_TABLE_TAIKHOAN)
         db.execSQL(CREATE_TABLE_QUYEN)
         db.execSQL(CREATE_TABLE_CHITIETTAIKHOAN)
+        db.execSQL(CREATE_TABLE_HOADON)
+        db.execSQL(CREATE_TABLE_HINHTHUCTHANHTOAN)
+        db.execSQL(CREATE_TABLE_CHITIETHOADON)
 
-        // Insert default roles
+        // Insert default admin account
+        val adminValues = ContentValues().apply {
+            put("TenNguoiDung", "admin1")
+            put("Email", "admin1@gmail.com")
+            put("MatKhau", "123") // Hash the password here if needed
+        }
+        val adminId = db.insert(TABLE_TAIKHOAN, null, adminValues)
+
+        // Insert admin role for the admin account
+        val adminRoleValues = ContentValues().apply {
+            put("MaTaiKhoan", adminId)
+            put("MaQuyen", 1) // Assuming '1' is the 'quản lý' role ID
+        }
+        db.insert(TABLE_CHITIETTAIKHOAN, null, adminRoleValues)
+
+        // Insert default user account
+        val userValues = ContentValues().apply {
+            put("TenNguoiDung", "thaotran")
+            put("Email", "thaotran@gmail.com")
+            put("MatKhau", "123") // Hash the password here if needed
+        }
+        val userId = db.insert(TABLE_TAIKHOAN, null, userValues)
+
+        // Insert user role for the user account
+        val userRoleValues = ContentValues().apply {
+            put("MaTaiKhoan", userId)
+            put("MaQuyen", 2) // Assuming '2' is the 'người dùng' role ID
+        }
+        db.insert(TABLE_CHITIETTAIKHOAN, null, userRoleValues)
         db.execSQL("INSERT INTO $TABLE_QUYEN (TenQuyen) VALUES ('quản lý')")
         db.execSQL("INSERT INTO $TABLE_QUYEN (TenQuyen) VALUES ('người dùng')")
+        db.execSQL("INSERT INTO $TABLE_HINHTHUCTHANHTOAN (TenHinhThuc) VALUES ('COD')")
+        db.execSQL("INSERT INTO $TABLE_HINHTHUCTHANHTOAN (TenHinhThuc) VALUES ('Momo')")
     }
-
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_CHITIETTAIKHOAN")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_TAIKHOAN")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_QUYEN")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_SANPHAM")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_HOADON")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_HINHTHUCTHANHTOAN")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_CHITIETHOADON")
         onCreate(db)
     }
 
@@ -90,11 +162,11 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val id = cursor.getInt(cursor.getColumnIndexOrThrow("MaSanPham"))
                 val name = cursor.getString(cursor.getColumnIndexOrThrow("TenSanPham"))
                 val description = cursor.getString(cursor.getColumnIndexOrThrow("MoTa"))
-                val imageResource = cursor.getInt(cursor.getColumnIndexOrThrow("HinhAnh"))
+                val imageResource = cursor.getString(cursor.getColumnIndexOrThrow("HinhAnh"))
                 val price = cursor.getDouble(cursor.getColumnIndexOrThrow("Gia"))
                 val quantity = cursor.getInt(cursor.getColumnIndexOrThrow("SoLuong"))
 
-                val product = Product(id.toString(), name, description, imageResource, price, quantity)
+                val product = Product(id, name, description, imageResource, price, quantity)
                 productList.add(product)
 
                 // Log the product details
@@ -106,8 +178,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return productList
     }
-
-
 
     // Method to count records in a table
     fun getCount(tableName: String): Int {
@@ -135,6 +205,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         db.insert(TABLE_SANPHAM, null, values)
     }
+
     // Method to fetch a product by its ID
     fun getProductById(productId: Int): Product? {
         val db = readableDatabase
@@ -144,18 +215,17 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             val id = cursor.getInt(cursor.getColumnIndexOrThrow("MaSanPham"))
             val name = cursor.getString(cursor.getColumnIndexOrThrow("TenSanPham"))
             val description = cursor.getString(cursor.getColumnIndexOrThrow("MoTa"))
-            val imageResource = cursor.getInt(cursor.getColumnIndexOrThrow("HinhAnh"))
+            val imageResource = cursor.getString(cursor.getColumnIndexOrThrow("HinhAnh"))
             val price = cursor.getDouble(cursor.getColumnIndexOrThrow("Gia"))
             val quantity = cursor.getInt(cursor.getColumnIndexOrThrow("SoLuong"))
 
             cursor.close()
-            Product(id.toString(), name, description, imageResource, price, quantity)
+            Product(id, name, description, imageResource, price, quantity)
         } else {
             cursor.close()
             null
         }
     }
-
 
     // Method to delete a product
     fun deleteProduct(productId: Int) {
@@ -173,9 +243,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put("MoTa", product.description)
             put("Gia", product.price)
             put("SoLuong", product.quantity)
-            put("TrangThai", if (product.isSelected) 1 else 0)
+            // Remove the reference to isSelected property
+            // put("TrangThai", if (product.isSelected) 1 else 0) // Assuming 1 for selected and 0 for not selected
         }
-        db.update(TABLE_SANPHAM, values, "MaSanPham = ?", arrayOf(product.id))
+        db.update(TABLE_SANPHAM, values, "MaSanPham = ?", arrayOf(product.id.toString()))
     }
-
 }
