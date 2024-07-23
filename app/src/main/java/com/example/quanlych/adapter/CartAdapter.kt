@@ -1,41 +1,53 @@
 package com.example.quanlych.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.quanlych.R
+import com.example.quanlych.databinding.ItemCartBinding
 import com.example.quanlych.model.Product
 
 class CartAdapter(
-    private val productList: List<Product>,
+    private val products: List<Product>,
     private val onQuantityChanged: (Product) -> Unit,
     private val onProductChecked: (Product, Boolean) -> Unit
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
 
-    class CartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val productImage: ImageView = itemView.findViewById(R.id.product_image)
-        val productName: TextView = itemView.findViewById(R.id.product_name)
-        val productPrice: TextView = itemView.findViewById(R.id.product_price)
-        val txtQuantity: TextView = itemView.findViewById(R.id.txt_quantity)
-        val btnIncrement: Button = itemView.findViewById(R.id.btn_increment)
-        val btnDecrement: Button = itemView.findViewById(R.id.btn_decrement)
-        val checkboxSelectProduct: CheckBox = itemView.findViewById(R.id.checkbox_select_product)
+    inner class CartViewHolder(private val binding: ItemCartBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(product: Product) {
+            binding.productName.text = product.name
+            binding.productPrice.text = "${product.price}đ"
+            binding.txtQuantity.text = product.quantity.toString()
+
+            binding.btnIncrement.setOnClickListener {
+                product.quantity++
+                binding.txtQuantity.text = product.quantity.toString()
+                onQuantityChanged(product)
+            }
+
+            binding.btnDecrement.setOnClickListener {
+                if (product.quantity > 1) {
+                    product.quantity--
+                    binding.txtQuantity.text = product.quantity.toString()
+                    onQuantityChanged(product)
+                }
+            }
+
+            binding.checkboxSelectProduct.isChecked = product.isSelected
+            binding.checkboxSelectProduct.setOnCheckedChangeListener { _, isChecked ->
+                product.isSelected = isChecked
+                onProductChecked(product, isChecked)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_cart, parent, false)
-        return CartViewHolder(itemView)
+        val binding = ItemCartBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CartViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        holder.bind(products[position])
     }
 
-
-    override fun getItemCount(): Int = productList.size
+    override fun getItemCount(): Int = products.size
 }

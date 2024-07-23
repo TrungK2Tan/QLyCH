@@ -2,6 +2,7 @@ package com.example.quanlych
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.TextView
@@ -13,6 +14,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.quanlych.data.DatabaseHelper
 import com.example.quanlych.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 
@@ -21,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-
+    private lateinit var databaseHelper: DatabaseHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,7 +44,16 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        databaseHelper = DatabaseHelper(this)
 
+        // Add a test product
+        databaseHelper.addTestProduct()
+
+        // Retrieve and log all products to check if the test product was added
+        val products = databaseHelper.getAllProducts()
+        products.forEach { product ->
+            Log.d("MainActivity", "Product - ID: ${product.id}, Name: ${product.name}, Description: ${product.description}, Price: ${product.price}, Quantity: ${product.quantity}")
+        }
         // Add a listener to change the toolbar visibility based on the destination
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {

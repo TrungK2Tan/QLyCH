@@ -1,3 +1,4 @@
+// ProductDetailFragment.kt
 package com.example.quanlych.ui.gallery
 
 import android.os.Bundle
@@ -9,8 +10,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.quanlych.R
 import com.example.quanlych.model.Product
+import com.example.quanlych.utils.CartManager
 
 class ProductDetailFragment : Fragment() {
 
@@ -41,7 +45,10 @@ class ProductDetailFragment : Fragment() {
 
         productName.text = product.name
         productPrice.text = "${product.price}đ"
-        productImage.setImageResource(R.drawable.banner1) // Replace with actual image loading logic
+        // Use Glide or another library to load images from resources or URLs
+        Glide.with(this)
+            .load(product.imageResource) // Replace with URL if using online images
+            .into(productImage) // Replace with actual image loading logic
         productDescription.text = product.description
 
         txtTotalPrice.text = "Total: ${product.price * quantity}đ"
@@ -61,8 +68,10 @@ class ProductDetailFragment : Fragment() {
         }
 
         addToCartButton.setOnClickListener {
+            val cartProduct = product.copy(quantity = quantity) // Update the product with the selected quantity
+            CartManager.cartItems.add(cartProduct) // Add the product to the cart
             Toast.makeText(context, "Thêm vào giỏ hàng với số lượng $quantity", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_productdetails_to_cart) // Navigate to CartFragment
         }
     }
 }
-

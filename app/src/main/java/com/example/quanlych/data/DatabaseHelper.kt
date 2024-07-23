@@ -248,4 +248,16 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         db.update(TABLE_SANPHAM, values, "MaSanPham = ?", arrayOf(product.id.toString()))
     }
+    fun addTestProduct() {
+//        val db = writableDatabase
+//        val values = ContentValues().apply {
+//            put("TenSanPham", "Test Product")
+//            put("HinhAnh", "https://i.pinimg.com/originals/ba/0e/b8/ba0eb82dbe74fb21925083c2ea7475b4.jpg") // Placeholder image URL
+//            put("MoTa", "This is a test product.")
+//            put("Gia", 99.99)
+//            put("TrangThai", 1) // Default status
+//            put("SoLuong", 10)
+//        }
+//        db.insert(TABLE_SANPHAM, null, values)
+    }
 }

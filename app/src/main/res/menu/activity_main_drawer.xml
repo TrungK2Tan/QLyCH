@@ -25,10 +25,6 @@
             android:icon="@drawable/baseline_login_24"
             android:title="@string/menu_logout" />
         <item
-            android:id="@+id/nav_productdetails"
-            android:icon="@drawable/baseline_login_24"
-            android:title="@string/menu_productdetails" />
-        <item
             android:id="@+id/nav_thanhtoan"
             android:icon="@drawable/baseline_login_24"
             android:title="@string/menu_thanhtoan" />

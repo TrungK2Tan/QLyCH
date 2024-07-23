@@ -6,53 +6,40 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quanlych.R
 import com.example.quanlych.adapter.CartAdapter
 import com.example.quanlych.databinding.FragmentCartBinding
 import com.example.quanlych.model.Product
+import com.example.quanlych.utils.CartManager
 
 class CartFragment : Fragment() {
 
     private var _binding: FragmentCartBinding? = null
     private val binding get() = _binding!!
     private lateinit var cartAdapter: CartAdapter
-    private lateinit var productList: List<Product>
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val cartViewModel = ViewModelProvider(this).get(CartViewModel::class.java)
-
         _binding = FragmentCartBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textCart
-        cartViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-
-        // Initialize product list
-        productList = listOf(
-            Product(1, "SanPham 1", "xin qua", "drawable/banner1.png", 100.0, 10),
-            Product(2, "SanPham 2", "xin qua", "drawable/banner2.png", 10000.0, 10),
-            Product(3, "SanPham 3", "xin qua", "drawable/banner3.png", 1000.0, 10)
+        cartAdapter = CartAdapter(
+            CartManager.cartItems,
+            ::onQuantityChanged, // Callback for quantity changes
+            ::onProductChecked  // Callback for product check/uncheck
         )
-
-        // Set up RecyclerView
-        cartAdapter = CartAdapter(productList, ::onQuantityChanged, ::onProductChecked)
         binding.recycleviewgiohang.layoutManager = LinearLayoutManager(context)
         binding.recycleviewgiohang.adapter = cartAdapter
 
         updateTotalPrice()
+        checkIfCartIsEmpty()
 
-        // Set up click listener for the buy button
         binding.btnmuahang.setOnClickListener {
-            // Navigate to the payment fragment on buy button click
             findNavController().navigate(R.id.action_nav_cart_to_nav_thanhtoan)
         }
         return root
@@ -68,12 +55,27 @@ class CartFragment : Fragment() {
 
     private fun updateTotalPrice() {
         var totalPrice = 0.0
-        for (product in productList) {
+        for (product in CartManager.cartItems) {
             if (product.isSelected) {
                 totalPrice += product.quantity * product.price
             }
         }
         binding.txttongtien.text = String.format("%.2fđ", totalPrice)
+        checkIfCartIsEmpty()
+    }
+
+    private fun checkIfCartIsEmpty() {
+        if (CartManager.cartItems.isEmpty()) {
+            binding.recycleviewgiohang.visibility = View.GONE
+            binding.textCart.visibility = View.VISIBLE
+            binding.txttongtien.visibility = View.GONE
+            binding.btnmuahang.visibility = View.GONE
+        } else {
+            binding.recycleviewgiohang.visibility = View.VISIBLE
+            binding.textCart.visibility = View.GONE
+            binding.txttongtien.visibility = View.VISIBLE
+            binding.btnmuahang.visibility = View.VISIBLE
+        }
     }
 
     override fun onDestroyView() {

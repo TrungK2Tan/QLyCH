@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.quanlych.R
 import com.example.quanlych.model.Product
 
@@ -29,7 +30,10 @@ class ProductAdapter(
             productPrice.text = "${product.price}đ"
             // Assuming you have a way to load images, e.g., using Glide or Picasso
             // Glide.with(itemView.context).load(product.imageUrl).into(productImage)
-
+            // Load image from URL or file path using Glide
+            Glide.with(productImage.context)
+                .load(product.imageResource) // This should be a URL or file path as a String
+                .into(productImage)
             itemView.setOnClickListener {
                 itemClickListener.onItemClick(product)
             }

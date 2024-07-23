@@ -8,8 +8,8 @@ data class Product(
     val description: String,
     val imageResource: String,  // Change this to String
     val price: Double,
-    val quantity: Int,
-    val isSelected: Boolean = false // Add this property if needed
+    var quantity: Int,
+    var isSelected: Boolean = false // Add this property if needed
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
