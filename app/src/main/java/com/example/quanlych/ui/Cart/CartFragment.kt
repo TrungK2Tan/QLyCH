@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,8 +29,8 @@ class CartFragment : Fragment() {
 
         cartAdapter = CartAdapter(
             CartManager.cartItems,
-            ::onQuantityChanged, // Callback for quantity changes
-            ::onProductChecked  // Callback for product check/uncheck
+            ::onQuantityChanged,
+            ::onProductChecked
         )
         binding.recycleviewgiohang.layoutManager = LinearLayoutManager(context)
         binding.recycleviewgiohang.adapter = cartAdapter
@@ -40,7 +39,17 @@ class CartFragment : Fragment() {
         checkIfCartIsEmpty()
 
         binding.btnmuahang.setOnClickListener {
-            findNavController().navigate(R.id.action_nav_cart_to_nav_thanhtoan)
+            val totalPrice = calculateTotalPrice()
+            val selectedProducts = CartManager.cartItems.filter { it.isSelected }
+
+            val bundle = Bundle().apply {
+                putDouble("totalPrice", totalPrice)
+                putParcelableArrayList("selectedProducts", ArrayList(selectedProducts))
+                putString("userPhoneNumber", "0362922312") // Replace with actual user phone number
+                putString("userEmail", "thaotran@gmail.com") // Replace with actual user email
+            }
+
+            findNavController().navigate(R.id.action_nav_cart_to_nav_thanhtoan, bundle)
         }
         return root
     }
@@ -53,13 +62,13 @@ class CartFragment : Fragment() {
         updateTotalPrice()
     }
 
+    private fun calculateTotalPrice(): Double {
+        return CartManager.cartItems.filter { it.isSelected }
+            .sumOf { it.quantity * it.price }
+    }
+
     private fun updateTotalPrice() {
-        var totalPrice = 0.0
-        for (product in CartManager.cartItems) {
-            if (product.isSelected) {
-                totalPrice += product.quantity * product.price
-            }
-        }
+        val totalPrice = calculateTotalPrice()
         binding.txttongtien.text = String.format("%.2fđ", totalPrice)
         checkIfCartIsEmpty()
     }

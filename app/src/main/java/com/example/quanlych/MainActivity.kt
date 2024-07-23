@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var databaseHelper: DatabaseHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,36 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        databaseHelper = DatabaseHelper(this)
 
-        // Add a test product
-        databaseHelper.addTestProduct()
-
-        // Retrieve and log all products to check if the test product was added
-        val products = databaseHelper.getAllProducts()
-        products.forEach { product ->
-            Log.d("MainActivity", "Product - ID: ${product.id}, Name: ${product.name}, Description: ${product.description}, Price: ${product.price}, Quantity: ${product.quantity}")
-        }
-        // Add a listener to change the toolbar visibility based on the destination
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.nav_login, R.id.nav_register, R.id.nav_admin_home ,R.id.nav_admin_chart,R.id.nav_admin_user,R.id.nav_admin_product,R.id.nav_admin_order-> {
-                    binding.appBarMain.toolbar.visibility = View.GONE
-                }
-                else -> {
-                    binding.appBarMain.toolbar.visibility = View.VISIBLE
-                }
-            }
-        }
-        //
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            val fab: View = findViewById(R.id.fab)
-
-            when (destination.id) {
-                R.id.nav_admin_user ,R.id.nav_admin_product,R.id.nav_login, R.id.nav_register-> fab.visibility = View.GONE
-                else -> fab.visibility = View.VISIBLE
-            }
-        }
         // Handle navigation item clicks
         navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -91,6 +63,9 @@ class MainActivity : AppCompatActivity() {
                         apply()
                     }
 
+                    // Update Navigation Header with empty user info
+                    updateNavHeader()
+
                     // Navigate to login screen
                     navController.navigate(R.id.nav_login)
 
@@ -107,18 +82,54 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Add a listener to change the toolbar visibility based on the destination
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.nav_login, R.id.nav_register, R.id.nav_admin_home,
+                R.id.nav_admin_chart, R.id.nav_admin_user, R.id.nav_admin_product,
+                R.id.nav_admin_order -> {
+                    binding.appBarMain.toolbar.visibility = View.GONE
+                }
+                else -> {
+                    binding.appBarMain.toolbar.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        // Show/hide FAB based on the destination
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val fab: View = findViewById(R.id.fab)
+            fab.visibility = if (destination.id in listOf(
+                    R.id.nav_admin_user, R.id.nav_admin_product
+                )) View.GONE else View.VISIBLE
+        }
+
+        databaseHelper = DatabaseHelper(this)
+
+        // Add a test product
+        databaseHelper.addTestProduct()
+
+        // Retrieve and log all products to check if the test product was added
+        val products = databaseHelper.getAllProducts()
+        products.forEach { product ->
+            Log.d("MainActivity", "Product - ID: ${product.id}, Name: ${product.name}, Description: ${product.description}, Price: ${product.price}, Quantity: ${product.quantity}")
+        }
+
         // Update Navigation Header with user info
         updateNavHeader()
     }
 
-    public fun updateNavHeader() {
-        val headerView = binding.navView.getHeaderView(0)
-        val navUsername = headerView.findViewById<TextView>(R.id.nav_username)
-        val navEmail = headerView.findViewById<TextView>(R.id.nav_email)
+    fun updateNavHeader() {
+        val headerView: View = binding.navView.getHeaderView(0)
+        val navUsername: TextView = headerView.findViewById(R.id.nav_username)
+        val navEmail: TextView = headerView.findViewById(R.id.nav_email)
 
         val sharedPref = getSharedPreferences("UserPref", Context.MODE_PRIVATE)
-        navUsername.text = sharedPref.getString("username", "Username")
-        navEmail.text = sharedPref.getString("email", "email@example.com")
+        val username = sharedPref.getString("username", "Username")
+        val email = sharedPref.getString("email", "email@example.com")
+
+        navUsername.text = username
+        navEmail.text = email
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -1,6 +1,5 @@
 package com.example.quanlych.ui.login
 
-
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.quanlych.MainActivity
 import com.example.quanlych.R
 import com.example.quanlych.data.UserRepository
 import com.example.quanlych.databinding.FragmentLoginBinding
@@ -35,11 +35,14 @@ class LoginFragment : Fragment() {
             if (isLoginSuccessful) {
                 // Save user information to SharedPreferences
                 val sharedPref = requireActivity().getSharedPreferences("UserPref", Context.MODE_PRIVATE)
-                with (sharedPref.edit()) {
+                with(sharedPref.edit()) {
                     putString("username", email) // Assuming email as username
                     putString("email", email)
                     apply()
                 }
+
+                // Update the navigation header with the new user's info
+                (activity as MainActivity).updateNavHeader()
 
                 // Navigate based on user role
                 if (role == "quản lý") {
@@ -67,5 +70,3 @@ class LoginFragment : Fragment() {
         _binding = null
     }
 }
-
-

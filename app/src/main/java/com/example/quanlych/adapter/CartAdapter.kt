@@ -3,6 +3,7 @@ package com.example.quanlych.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.quanlych.databinding.ItemCartBinding
 import com.example.quanlych.model.Product
 
@@ -18,6 +19,10 @@ class CartAdapter(
             binding.productPrice.text = "${product.price}đ"
             binding.txtQuantity.text = product.quantity.toString()
 
+            // Load image using Glide
+            Glide.with(binding.root)
+                .load(product.imageResource) // Replace with URL if using online images
+                .into(binding.productImage)
             binding.btnIncrement.setOnClickListener {
                 product.quantity++
                 binding.txtQuantity.text = product.quantity.toString()

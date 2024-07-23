@@ -248,6 +248,47 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         db.update(TABLE_SANPHAM, values, "MaSanPham = ?", arrayOf(product.id.toString()))
     }
+    // Method to add an order
+    fun addOrder(userId: Int, date: String, total: Double, address: String, phone: String, paymentMethodId: Int): Int {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("MaTaiKhoan", userId)
+            put("NgayLap", date)
+            put("TongTien", total)
+            put("DiaChi", address)
+            put("SoDienThoai", phone)
+            put("MaHinhThuc", paymentMethodId)
+            put("TrangThai", 1) // Assuming '1' is the default status
+        }
+        val result = db.insert(TABLE_HOADON, null, values)
+        return result.toInt()
+    }
+
+
+    // Method to add order details
+    fun addOrderDetail(orderId: Int, productId: Int, quantity: Int, price: Double) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("MaHoaDon", orderId)
+            put("MaSanPham", productId)
+            put("SoLuong", quantity)
+            put("Gia", price)
+        }
+        db.insert(TABLE_CHITIETHOADON, null, values)
+    }
+
+
+    // Method to get user ID by email
+    fun getUserIdByEmail(email: String): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT MaTaiKhoan FROM $TABLE_TAIKHOAN WHERE Email = ?", arrayOf(email))
+        val userId = if (cursor.moveToFirst()) cursor.getInt(0) else -1
+        cursor.close()
+        return userId
+    }
+
+
+
     fun addTestProduct() {
 //        val db = writableDatabase
 //        val values = ContentValues().apply {
@@ -260,4 +301,5 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 //        }
 //        db.insert(TABLE_SANPHAM, null, values)
     }
+
 }

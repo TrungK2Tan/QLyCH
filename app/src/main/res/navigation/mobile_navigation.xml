@@ -70,7 +70,11 @@
         android:id="@+id/nav_thanhtoan"
         android:name="com.example.quanlych.ui.order.OrderFragment"
         android:label="@string/menu_thanhtoan"
-        tools:layout="@layout/fragment_order" />
+        tools:layout="@layout/fragment_order" >
+        <action
+            android:id="@+id/action_order_to_slideshow"
+            app:destination="@id/nav_slideshow" />
+    </fragment>
    <!--ADMIN -->
     <fragment
         android:id="@+id/nav_admin_home"
