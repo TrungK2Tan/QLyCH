@@ -101,5 +101,47 @@ class UserRepository(context: Context) {
         return userList
     }
 
+    // Get users by role ID
+    fun getUsersByRole(roleId: Long): List<User> {
+        val users = mutableListOf<User>()
+        val db = dbHelper.readableDatabase
+        val query = """
+            SELECT t.* 
+            FROM TaiKhoan t 
+            JOIN ChiTietTaiKhoan ctt ON t.MaTaiKhoan = ctt.MaTaiKhoan 
+            WHERE ctt.MaQuyen = ?
+        """
+        val cursor: Cursor = db.rawQuery(query, arrayOf(roleId.toString()))
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow("MaTaiKhoan"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("TenNguoiDung"))
+                val email = cursor.getString(cursor.getColumnIndexOrThrow("Email"))
+                val password = cursor.getString(cursor.getColumnIndexOrThrow("MatKhau"))
+                users.add(User(id, name, email, password))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return users
+    }
+
+    // Get roles for a user
+    fun getUserRoles(userId: Long): List<Long> {
+        val roles = mutableListOf<Long>()
+        val db = dbHelper.readableDatabase
+        val query = "SELECT MaQuyen FROM ChiTietTaiKhoan WHERE MaTaiKhoan = ?"
+        val cursor: Cursor = db.rawQuery(query, arrayOf(userId.toString()))
+        if (cursor.moveToFirst()) {
+            do {
+                val roleId = cursor.getLong(cursor.getColumnIndexOrThrow("MaQuyen"))
+                roles.add(roleId)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return roles
+    }
+
+
+
 }
 data class User(val id: Long, val name: String, val email: String, val password: String)

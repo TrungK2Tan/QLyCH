@@ -1,5 +1,6 @@
 package com.example.quanlych.admin.home
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,9 +15,6 @@ import com.example.quanlych.databinding.FragmentAdminHomeBinding
 class AdminHomeFragment : Fragment() {
 
     private var _binding: FragmentAdminHomeBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -34,23 +32,27 @@ class AdminHomeFragment : Fragment() {
         AdminhomeViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
-        // Set up click listener for login button
+
+        // Retrieve the email from SharedPreferences and set it to the TextView
+        val sharedPref = requireActivity().getSharedPreferences("UserPref", Context.MODE_PRIVATE)
+        val email = sharedPref.getString("email", "email@example.com")
+        val emailTextView: TextView = binding.amazonDesc
+        emailTextView.text = email
+
+        // Set up click listeners for navigation
         binding.chartImage.setOnClickListener {
-            // Navigate to the Home Fragment on login button click
             findNavController().navigate(R.id.action_home_to_chart)
         }
         binding.orderImage.setOnClickListener {
-            // Navigate to the Home Fragment on login button click
             findNavController().navigate(R.id.action_home_to_order)
         }
         binding.userImage.setOnClickListener {
-            // Navigate to the Home Fragment on login button click
             findNavController().navigate(R.id.action_home_to_user)
         }
         binding.productImage.setOnClickListener {
-            // Navigate to the Home Fragment on login button click
             findNavController().navigate(R.id.action_home_to_product)
         }
+
         return root
     }
 

@@ -6,6 +6,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -38,8 +40,7 @@ class AdminUserFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         userRepository = UserRepository(requireContext())
-        val userList = userRepository.getAllUsers()
-        userAdapter = UserAdapter(userList)
+        userAdapter = UserAdapter(emptyList())
         recyclerView.adapter = userAdapter
 
         val textView = binding.textAdminuser
@@ -47,24 +48,58 @@ class AdminUserFragment : Fragment() {
             textView.text = it
         }
 
+        // Load all users initially
+        val allUsers = userRepository.getAllUsers()
+        userAdapter.updateData(allUsers)
+
         binding.editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString()
+                val roleId = when (textView.text) {
+                    "Khách hàng" -> 2L
+                    "Admin" -> 1L
+                    else -> return
+                }
                 val filteredList = if (query.isEmpty()) {
-                    userRepository.getAllUsers()
+                    userRepository.getUsersByRole(roleId)
                 } else {
-                    userRepository.searchUsers(query)
+                    userRepository.searchUsers(query).filter { user ->
+                        // Filter by role
+                        val userRoles = userRepository.getUserRoles(user.id)
+                        roleId in userRoles
+                    }
                 }
                 userAdapter.updateData(filteredList)
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        binding.txtkhach.setOnClickListener {
+            highlightSelected(binding.txtkhach, binding.txtadmin)
+            binding.textAdminuser.text = "Khách hàng"
+            val userList = userRepository.getUsersByRole(2L)
+            userAdapter.updateData(userList)
+        }
+
+        binding.txtadmin.setOnClickListener {
+            highlightSelected(binding.txtadmin, binding.txtkhach)
+            binding.textAdminuser.text = "Admin"
+            val userList = userRepository.getUsersByRole(1L)
+            userAdapter.updateData(userList)
+        }
+
         binding.floatingActionButton.setOnClickListener {
             // Navigate to AddUserFragment
             findNavController().navigate(R.id.action_admin_to_adduser)
         }
+
         return root
+    }
+
+    private fun highlightSelected(selected: TextView, unselected: TextView) {
+        selected.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_selected))
+        unselected.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_default))
     }
 
     override fun onDestroyView() {

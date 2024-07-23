@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="purple">#8692f7</color>
     <color name="lavender">#8692f7</color>
+    <color name="color_default">#000000</color> <!-- Default text color -->
+    <color name="color_selected">#9C27B0</color> <!-- Highlight text color -->
 </resources>
