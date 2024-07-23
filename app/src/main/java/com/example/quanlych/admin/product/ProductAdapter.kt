@@ -1,10 +1,9 @@
 package com.example.quanlych.admin.product
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-
-
 import com.bumptech.glide.Glide
 import com.example.quanlych.databinding.AdminItemProductBinding
 import com.example.quanlych.model.Product
@@ -22,13 +21,12 @@ class ProductAdapter(
     inner class ProductViewHolder(private val binding: AdminItemProductBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
             binding.productName.text = product.name
-            binding.productDescription.text = product.description
+//            binding.productDescription.text = product.description
             binding.productPrice.text = product.price.toString()
             binding.productQuantity.text = product.quantity.toString()
-
-            // Use Glide to load the image
+            // Load image from URL or file path using Glide
             Glide.with(binding.productImage.context)
-                .load(product.imageResource)
+                .load(product.imageResource) // This should be a URL or file path as a String
                 .into(binding.productImage)
 
             binding.editButton.setOnClickListener { listener.onEditClick(product) }

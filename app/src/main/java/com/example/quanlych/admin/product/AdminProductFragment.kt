@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -84,6 +85,26 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
         binding.recyclerView.adapter = productAdapter
     }
 
+    private fun showDeleteConfirmationDialog(product: Product) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Xóa sản phẩm")
+            .setMessage("Bạn có chắc chắn muốn xóa sản phẩm này không?")
+            .setPositiveButton("Xóa") { _, _ ->
+                deleteProduct(product)
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
+    }
+
+    private fun deleteProduct(product: Product) {
+        try {
+            databaseHelper.deleteProduct(product.id.toInt())
+            loadProducts() // Reload the product list after deletion
+        } catch (e: Exception) {
+            Log.e("AdminProductFragment", "Error deleting product", e)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -97,11 +118,6 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
     }
 
     override fun onDeleteClick(product: Product) {
-        try {
-            databaseHelper.deleteProduct(product.id.toInt())
-            loadProducts() // Reload the product list after deletion
-        } catch (e: Exception) {
-            Log.e("AdminProductFragment", "Error deleting product", e)
-        }
+        showDeleteConfirmationDialog(product)
     }
 }

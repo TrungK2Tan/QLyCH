@@ -51,7 +51,8 @@ class EditProductFragment : Fragment() {
             binding.editProductName.setText(it.name)
             binding.editProductDescription.setText(it.description)
             binding.editProductPrice.setText(it.price.toString())
-            binding.editProductquantity.setText(it.quantity.toString())
+            binding.editProductQuantity.setText(it.quantity.toString())
+            binding.editImageUrl.setText(it.imageResource) // Load existing image URL if needed
         }
     }
 
@@ -59,14 +60,15 @@ class EditProductFragment : Fragment() {
         val name = binding.editProductName.text.toString()
         val description = binding.editProductDescription.text.toString()
         val price = binding.editProductPrice.text.toString().toDoubleOrNull()
-        val quantity = binding.editProductquantity.text.toString().toIntOrNull()
+        val quantity = binding.editProductQuantity.text.toString().toIntOrNull()
+        val imageUrl = binding.editImageUrl.text.toString()
 
         if (price != null && quantity != null) {
             val product = Product(
-                id = productId,  // Use Int here
+                id = productId,
                 name = name,
                 description = description,
-                imageResource = R.drawable.banner3.toString(), // Provide a default or appropriate resource
+                imageResource = imageUrl, // Save the image URL or file path
                 price = price,
                 quantity = quantity
             )
@@ -75,6 +77,7 @@ class EditProductFragment : Fragment() {
             findNavController().popBackStack()
         } else {
             // Handle invalid input if needed
+            // For example, you can show a toast or alert dialog
         }
     }
 
