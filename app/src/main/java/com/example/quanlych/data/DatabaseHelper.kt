@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import com.example.quanlych.model.Order
 import com.example.quanlych.model.Product
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -277,6 +278,30 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.insert(TABLE_CHITIETHOADON, null, values)
     }
 
+    fun getAllOrders(): List<Order> {
+        val orderList = mutableListOf<Order>()
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_HOADON", null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("MaHoaDon"))
+                val userId = cursor.getInt(cursor.getColumnIndexOrThrow("MaTaiKhoan"))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow("NgayLap"))
+                val total = cursor.getDouble(cursor.getColumnIndexOrThrow("TongTien"))
+                val status = cursor.getInt(cursor.getColumnIndexOrThrow("TrangThai"))
+                val address = cursor.getString(cursor.getColumnIndexOrThrow("DiaChi"))
+                val phone = cursor.getString(cursor.getColumnIndexOrThrow("SoDienThoai"))
+                val paymentMethodId = cursor.getInt(cursor.getColumnIndexOrThrow("MaHinhThuc"))
+
+                val order = Order(id, userId, date, total, status, address, phone, paymentMethodId)
+                orderList.add(order)
+
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return orderList
+    }
 
     // Method to get user ID by email
     fun getUserIdByEmail(email: String): Int {
