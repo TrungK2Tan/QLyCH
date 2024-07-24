@@ -52,7 +52,10 @@ class AdminHomeFragment : Fragment() {
         binding.productImage.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_product)
         }
-
+// Set up click listener for category
+        binding.categoryImage.setOnClickListener {
+            findNavController().navigate(R.id.action_home_to_category) // Thay đổi action_id để phù hợp với định tuyến của bạn
+        }
         return root
     }
 

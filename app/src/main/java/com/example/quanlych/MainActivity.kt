@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
             when (destination.id) {
                 R.id.nav_login, R.id.nav_register, R.id.nav_admin_home,
                 R.id.nav_admin_chart, R.id.nav_admin_user, R.id.nav_admin_product,
-                R.id.nav_admin_order -> {
+                R.id.nav_admin_order ,R.id.nav_category-> {
                     binding.appBarMain.toolbar.visibility = View.GONE
                 }
                 else -> {
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val fab: View = findViewById(R.id.fab)
             fab.visibility = if (destination.id in listOf(
-                    R.id.nav_admin_user, R.id.nav_admin_product
+                    R.id.nav_admin_user, R.id.nav_admin_product,R.id.nav_category,R.id.nav_login, R.id.nav_admin_home,R.id.nav_admin_chart,R.id.nav_admin_order
                 )) View.GONE else View.VISIBLE
         }
 
