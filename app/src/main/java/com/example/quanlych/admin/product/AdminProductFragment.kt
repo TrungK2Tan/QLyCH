@@ -5,8 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quanlych.R
@@ -37,6 +39,10 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         databaseHelper = DatabaseHelper(requireContext())
+
+        // Add test product for testing purposes
+        databaseHelper.addTestProduct()
+
         loadProducts()
 
         binding.floatingActionButton.setOnClickListener {
@@ -54,6 +60,14 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
                 return true
             }
         })
+
+        // Register listener for fragment result
+        setFragmentResultListener("requestKey") { _, bundle ->
+            val newProductAdded = bundle.getBoolean("newProductAdded", false)
+            if (newProductAdded) {
+                loadProducts() // Reload the product list after adding a new product
+            }
+        }
     }
 
     private fun loadProducts() {
@@ -61,10 +75,12 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
             productList = databaseHelper.getAllProducts()
             filteredList = productList // Initialize filtered list
             updateRecyclerView()
+            Toast.makeText(requireContext(), "Product list updated", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Log.e("AdminProductFragment", "Error loading products", e)
         }
     }
+
 
     private fun filterProducts(query: String?) {
         val filtered = if (query.isNullOrEmpty()) {

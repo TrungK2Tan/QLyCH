@@ -5,34 +5,63 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Product Name EditText -->
     <EditText
         android:id="@+id/editTextProductName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
         android:hint="Product Name" />
 
+    <!-- Product Description EditText -->
     <EditText
         android:id="@+id/editTextProductDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
         android:hint="Product Description" />
 
+    <!-- Image URL EditText -->
     <EditText
         android:id="@+id/editTextImageUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
         android:hint="Enter Image URL" />
 
+    <!-- Product Price EditText -->
     <EditText
         android:id="@+id/editTextProductPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
         android:hint="Product Price" />
 
+    <!-- Product Category Spinner -->
+    <Spinner
+        android:id="@+id/spinnerProductCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp" />
+
+    <!-- Save Product Button -->
     <Button
         android:id="@+id/buttonSaveProduct"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="16dp"
+        android:layout_marginTop="16dp"
         android:text="Save Product" />
 
 </LinearLayout>

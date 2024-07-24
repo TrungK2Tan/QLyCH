@@ -1,4 +1,3 @@
-// GalleryFragment.kt
 package com.example.quanlych.ui.gallery
 
 import android.os.Bundle

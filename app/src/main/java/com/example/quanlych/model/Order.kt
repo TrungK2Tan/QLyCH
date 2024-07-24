@@ -1,5 +1,4 @@
 package com.example.quanlych.model
-
 data class Order(
     val id: Int,
     val userId: Int,

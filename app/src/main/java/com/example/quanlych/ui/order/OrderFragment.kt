@@ -1,6 +1,7 @@
 package com.example.quanlych.ui.order
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import com.example.quanlych.R
 import com.example.quanlych.databinding.FragmentOrderBinding
 import com.example.quanlych.model.Product
 import com.example.quanlych.data.DatabaseHelper
+import com.example.quanlych.data.UserRepository
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -36,7 +38,8 @@ class OrderFragment : Fragment() {
         // Retrieve arguments
         totalPrice = arguments?.getDouble("totalPrice") ?: 0.0
         selectedProducts = arguments?.getParcelableArrayList<Product>("selectedProducts") ?: ArrayList()
-        userEmail = arguments?.getString("userEmail") ?: ""
+        userEmail = UserRepository.UserSession.email ?: ""
+        Log.d("OrderFragment", "User Email: $userEmail")
 
         // Initialize the UI
         val formattedPrice = NumberFormat.getInstance(Locale.getDefault()).format(totalPrice)
@@ -57,6 +60,7 @@ class OrderFragment : Fragment() {
         val phoneNumber = binding.edtphone.text.toString().trim()
         val address = binding.edtdiachi.text.toString().trim()
 
+
         // Validate input
         if (phoneNumber.isEmpty() || address.isEmpty()) {
             Toast.makeText(requireContext(), "Vui lòng nhập số điện thoại và địa chỉ", Toast.LENGTH_SHORT).show()
@@ -67,7 +71,7 @@ class OrderFragment : Fragment() {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val userId = databaseHelper.getUserIdByEmail(userEmail)
 
-        if (userId == -1) { // Adjusted condition to check for invalid user ID
+        if (userId == -1) { // Check for invalid user ID
             Toast.makeText(requireContext(), "Người dùng không tồn tại", Toast.LENGTH_SHORT).show()
             return
         }
@@ -86,7 +90,6 @@ class OrderFragment : Fragment() {
         val navController = findNavController()
         navController.navigate(R.id.action_order_to_slideshow)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

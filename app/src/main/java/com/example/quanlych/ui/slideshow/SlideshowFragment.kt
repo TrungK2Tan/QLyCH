@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.quanlych.R
 import com.example.quanlych.adapter.OrderAdapter
 import com.example.quanlych.data.DatabaseHelper
+import com.example.quanlych.data.UserRepository
 import com.example.quanlych.databinding.FragmentSlideshowBinding
 import com.example.quanlych.model.Order
 
@@ -20,8 +22,7 @@ class SlideshowFragment : Fragment() {
     private var orderList: List<Order> = ArrayList()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSlideshowBinding.inflate(inflater, container, false)
@@ -29,8 +30,16 @@ class SlideshowFragment : Fragment() {
 
         databaseHelper = DatabaseHelper(requireContext())
 
-        // Get orders from database
-        orderList = databaseHelper.getAllOrders()
+        // Retrieve user email from UserRepository
+        val userEmail = UserRepository.UserSession.email ?: ""
+        val userId = databaseHelper.getUserIdByEmail(userEmail)
+
+        // Fetch orders based on userId
+        orderList = if (userId != -1) {
+            databaseHelper.getOrdersByUserId(userId)
+        } else {
+            ArrayList()
+        }
 
         // Setup RecyclerView
         orderAdapter = OrderAdapter(orderList)

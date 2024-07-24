@@ -21,7 +21,7 @@
     <string name="menu_order">Đơn hàng</string>
     <string name="menu_user">Tài khoản</string>
     <string name="menu_adduser">Thêm tài khoản</string>
-
+    <string name="product_image_description">Product Image</string>
         <string name="add_product">Thêm sản phẩm</string>
         <string name="edit">Sửa</string>
         <string name="delete">Xóa</string>

@@ -9,6 +9,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quanlych.R
 import com.example.quanlych.adapter.CartAdapter
+import com.example.quanlych.data.User
+import com.example.quanlych.data.UserRepository
 import com.example.quanlych.databinding.FragmentCartBinding
 import com.example.quanlych.model.Product
 import com.example.quanlych.utils.CartManager
@@ -18,6 +20,7 @@ class CartFragment : Fragment() {
     private var _binding: FragmentCartBinding? = null
     private val binding get() = _binding!!
     private lateinit var cartAdapter: CartAdapter
+    private var userEmail: String? = null // Change to store user email
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,6 +29,9 @@ class CartFragment : Fragment() {
     ): View {
         _binding = FragmentCartBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        // Retrieve user email from UserSession
+        val userEmail = UserRepository.UserSession.email
 
         cartAdapter = CartAdapter(
             CartManager.cartItems,
@@ -45,8 +51,7 @@ class CartFragment : Fragment() {
             val bundle = Bundle().apply {
                 putDouble("totalPrice", totalPrice)
                 putParcelableArrayList("selectedProducts", ArrayList(selectedProducts))
-                putString("userPhoneNumber", "0362922312") // Replace with actual user phone number
-                putString("userEmail", "thaotran@gmail.com") // Replace with actual user email
+                putString("userEmail", userEmail) // Use userEmail from UserSession
             }
 
             findNavController().navigate(R.id.action_nav_cart_to_nav_thanhtoan, bundle)
@@ -85,10 +90,5 @@ class CartFragment : Fragment() {
             binding.txttongtien.visibility = View.VISIBLE
             binding.btnmuahang.visibility = View.VISIBLE
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

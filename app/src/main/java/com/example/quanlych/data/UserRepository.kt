@@ -35,12 +35,14 @@ class UserRepository(context: Context) {
         }
         cursor.close()
     }
-
+    object UserSession {
+        var email: String? = null
+    }
     // Đăng nhập người dùng
     fun loginUser(email: String, password: String): Pair<Boolean, String?> {
         val db = dbHelper.readableDatabase
 
-        // Kiểm tra thông tin đăng nhập
+        // Check login credentials
         val query = "SELECT MaTaiKhoan, TenNguoiDung FROM TaiKhoan WHERE Email = ? AND MatKhau = ?"
         val cursor = db.rawQuery(query, arrayOf(email, password))
 
@@ -48,7 +50,10 @@ class UserRepository(context: Context) {
             val maTaiKhoan = cursor.getLong(0)
             val tenNguoiDung = cursor.getString(1)
 
-            // Kiểm tra quyền của tài khoản
+            // Store the email in the session
+            UserSession.email = email
+
+            // Check user role
             val roleQuery = "SELECT TenQuyen FROM ChiTietTaiKhoan ct JOIN Quyen q ON ct.MaQuyen = q.MaQuyen WHERE ct.MaTaiKhoan = ?"
             val roleCursor = db.rawQuery(roleQuery, arrayOf(maTaiKhoan.toString()))
 
@@ -63,6 +68,7 @@ class UserRepository(context: Context) {
             Pair(false, null)
         }
     }
+
     // Fetch all users from the database
     fun getAllUsers(): List<User> {
         val users = mutableListOf<User>()
