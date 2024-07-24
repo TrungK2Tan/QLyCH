@@ -1,4 +1,5 @@
 package com.example.quanlych.model
+
 data class Order(
     val id: Int,
     val userId: Int,
@@ -7,5 +8,16 @@ data class Order(
     val status: Int,
     val address: String,
     val phone: String,
-    val paymentMethodId: Int
+    val paymentMethod: Int,
+    var orderDetails: List<OrderDetail> = mutableListOf() // Make this mutable to allow updates
 )
+
+data class OrderDetail(
+    val productId: Int,
+    val productName: String,
+    val quantity: Int,
+    val price: Double
+)
+
+
+

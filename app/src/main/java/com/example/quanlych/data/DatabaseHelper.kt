@@ -10,6 +10,7 @@ import android.util.Log
 import com.example.quanlych.model.Account
 import com.example.quanlych.model.Category
 import com.example.quanlych.model.Order
+import com.example.quanlych.model.OrderDetail
 import com.example.quanlych.model.Product
 import java.security.MessageDigest
 
@@ -190,8 +191,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return productList
     }
-
-
     // Method to count records in a table
     fun getCount(tableName: String): Int {
         val db = readableDatabase
@@ -404,15 +403,21 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
             if (cursor.moveToFirst()) {
                 do {
+                    Log.d("DatabaseHelper", "Cursor columns: ${cursor.columnNames.joinToString()}") // Log column names
+
+                    val orderId = cursor.getInt(cursor.getColumnIndexOrThrow("MaHoaDon"))
+                    val orderDetails = getOrderDetailsByOrderId(orderId)
+
                     val order = Order(
-                        id = cursor.getInt(cursor.getColumnIndexOrThrow("MaHoaDon")),
-                        userId = userId, // Assuming userId is the same as the parameter passed to this function
+                        id = orderId,
+                        userId = userId,
                         date = cursor.getString(cursor.getColumnIndexOrThrow("NgayLap")),
                         total = cursor.getDouble(cursor.getColumnIndexOrThrow("TongTien")),
-                        status = cursor.getInt(cursor.getColumnIndexOrThrow("TrangThai")), // Adjusted to match the new Order class
+                        status = cursor.getInt(cursor.getColumnIndexOrThrow("TrangThai")),
                         address = cursor.getString(cursor.getColumnIndexOrThrow("DiaChi")),
                         phone = cursor.getString(cursor.getColumnIndexOrThrow("Sdt")),
-                        paymentMethodId = cursor.getInt(cursor.getColumnIndexOrThrow("MaHinhThuc"))
+                        paymentMethod = cursor.getInt(cursor.getColumnIndexOrThrow("MaHinhThuc")),
+                        orderDetails = orderDetails // Initialize with order details
                     )
                     orders.add(order)
                 } while (cursor.moveToNext())
@@ -425,4 +430,47 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return orders
     }
+
+    fun getOrderDetailsByOrderId(orderId: Int): List<OrderDetail> {
+        val orderDetails = mutableListOf<OrderDetail>()
+        val db = readableDatabase
+        val query = """
+        SELECT c.MaSanPham, s.TenSanPham, c.SoLuong, c.Gia 
+        FROM $TABLE_CHITIETHOADON c 
+        JOIN $TABLE_SANPHAM s ON c.MaSanPham = s.MaSanPham 
+        WHERE c.MaHoaDon = ?
+    """
+        val cursor = db.rawQuery(query, arrayOf(orderId.toString()))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val productId = cursor.getInt(cursor.getColumnIndexOrThrow("MaSanPham"))
+                val productName = cursor.getString(cursor.getColumnIndexOrThrow("TenSanPham"))
+                val quantity = cursor.getInt(cursor.getColumnIndexOrThrow("SoLuong"))
+                val price = cursor.getDouble(cursor.getColumnIndexOrThrow("Gia"))
+
+                val orderDetail = OrderDetail(
+                    productId = productId,
+                    productName = productName,
+                    quantity = quantity,
+                    price = price
+                )
+                orderDetails.add(orderDetail)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return orderDetails
+    }
+
+
+
+    fun getOrdersByUserIdWithDetails(userId: Int): List<Order> {
+        val orders = getOrdersByUserId(userId)
+        for (order in orders) {
+            order.orderDetails = getOrderDetailsByOrderId(order.id)
+        }
+        return orders
+    }
+
 }

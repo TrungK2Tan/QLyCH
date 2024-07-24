@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.quanlych.R
 import com.example.quanlych.adapter.OrderAdapter
 import com.example.quanlych.data.DatabaseHelper
 import com.example.quanlych.data.UserRepository
@@ -36,7 +35,7 @@ class SlideshowFragment : Fragment() {
 
         // Fetch orders based on userId
         orderList = if (userId != -1) {
-            databaseHelper.getOrdersByUserId(userId)
+            databaseHelper.getOrdersByUserIdWithDetails(userId)
         } else {
             ArrayList()
         }

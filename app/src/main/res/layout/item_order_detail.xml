@@ -8,39 +8,30 @@
     android:padding="8dp">
 
     <TextView
-        android:id="@+id/txtOrderId"
+        android:id="@+id/txtProductName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Order ID"
+        android:text="Product Name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtOrderDate"
+        android:id="@+id/txtProductQuantity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Order Date"
+        android:text="Quantity"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtOrderId" />
+        app:layout_constraintTop_toBottomOf="@id/txtProductName" />
 
     <TextView
-        android:id="@+id/txtOrderTotal"
+        android:id="@+id/txtProductPrice"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Order Total"
+        android:text="Price"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtOrderDate" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewOrderDetails"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/txtOrderTotal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:paddingTop="8dp"/>
+        app:layout_constraintTop_toBottomOf="@id/txtProductQuantity"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
