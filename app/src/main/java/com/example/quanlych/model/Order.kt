@@ -16,7 +16,8 @@ data class OrderDetail(
     val productId: Int,
     val productName: String,
     val quantity: Int,
-    val price: Double
+    val price: Double,
+    val productImage: String
 )
 
 

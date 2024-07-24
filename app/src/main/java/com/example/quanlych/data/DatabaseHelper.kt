@@ -435,7 +435,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         val orderDetails = mutableListOf<OrderDetail>()
         val db = readableDatabase
         val query = """
-        SELECT c.MaSanPham, s.TenSanPham, c.SoLuong, c.Gia 
+        SELECT c.MaSanPham, s.TenSanPham, c.SoLuong, c.Gia, s.HinhAnh 
         FROM $TABLE_CHITIETHOADON c 
         JOIN $TABLE_SANPHAM s ON c.MaSanPham = s.MaSanPham 
         WHERE c.MaHoaDon = ?
@@ -448,12 +448,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val productName = cursor.getString(cursor.getColumnIndexOrThrow("TenSanPham"))
                 val quantity = cursor.getInt(cursor.getColumnIndexOrThrow("SoLuong"))
                 val price = cursor.getDouble(cursor.getColumnIndexOrThrow("Gia"))
+                val productImage = cursor.getString(cursor.getColumnIndexOrThrow("HinhAnh")) // Lấy hình ảnh sản phẩm
 
                 val orderDetail = OrderDetail(
                     productId = productId,
                     productName = productName,
                     quantity = quantity,
-                    price = price
+                    price = price,
+                    productImage = productImage // Gán hình ảnh sản phẩm
                 )
                 orderDetails.add(orderDetail)
             } while (cursor.moveToNext())
@@ -462,6 +464,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return orderDetails
     }
+
 
 
 
