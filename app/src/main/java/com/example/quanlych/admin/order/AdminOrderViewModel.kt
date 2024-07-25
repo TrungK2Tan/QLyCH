@@ -1,15 +1,37 @@
 package com.example.quanlych.admin.order
 
-
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.quanlych.data.OrderRepository
+import com.example.quanlych.model.Order
 
-class AdminOrderViewModel : ViewModel() {
+class AdminOrderViewModel(private val repository: OrderRepository) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "ĐƠN HÀNG"
+    private val _orders = MutableLiveData<List<Order>>()
+    val orders: LiveData<List<Order>> = _orders
+
+    init {
+        _orders.value = repository.getAllOrders()
     }
-    val text: LiveData<String> = _text
+
+    fun getAllOrders(): List<Order> {
+        return repository.getAllOrders()
+    }
+
+    fun getOrdersByDay(date: String): List<Order> {
+        return repository.getOrdersByDay(date)
+    }
+
+    fun getOrdersByWeek(week: Int, year: Int): List<Order> {
+        return repository.getOrdersByWeek(week, year)
+    }
+
+    fun getOrdersByMonth(month: Int, year: Int): List<Order> {
+        return repository.getOrdersByMonth(month, year)
+    }
+
+    fun getOrdersByYear(year: Int): List<Order> {
+        return repository.getOrdersByYear(year)
+    }
 }

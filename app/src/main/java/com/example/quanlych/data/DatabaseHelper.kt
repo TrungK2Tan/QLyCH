@@ -162,8 +162,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         // Create new tables
         onCreate(db)
     }
-
-
     // Method to fetch all products
     fun getAllProducts(): List<Product> {
         val productList = mutableListOf<Product>()
@@ -203,7 +201,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return count
     }
-
     fun addProduct(product: Product) {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -219,7 +216,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         val result = db.insert(TABLE_SANPHAM, null, values)
         Log.d("DatabaseHelper", "Product insertion result: $result")
     }
-
     fun getProductById(productId: Int): Product? {
         val db = readableDatabase
         val cursor = db.rawQuery(
@@ -252,14 +248,12 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             null
         }
     }
-
     // Method to delete a product
     fun deleteProduct(productId: Int) {
         val db = writableDatabase
         db.delete(TABLE_SANPHAM, "MaSanPham = ?", arrayOf(productId.toString()))
         db.close()
     }
-
     // Method to update a product
     fun updateProduct(product: Product) {
         val db = writableDatabase
@@ -276,8 +270,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         val result = db.update(TABLE_SANPHAM, values, "MaSanPham = ?", arrayOf(product.id.toString()))
         Log.d("DatabaseHelper", "Product update result: $result")
     }
-
-
     fun addTestProduct() {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -291,7 +283,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         db.insert(TABLE_SANPHAM, null, values)
     }
-
     fun getProductCountsByType(): Int {
         val db = readableDatabase
         var totalCount = 0
@@ -308,7 +299,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
         return totalCount
     }
-
     fun getCountOfAccountsWithRole(roleId: Int): Int {
         val db = readableDatabase
         val query =
@@ -321,7 +311,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return count
     }
-
     fun getAllProductCategories(): List<Category> {
         val categoryList = mutableListOf<Category>()
         val db = this.readableDatabase
@@ -376,7 +365,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return db.insert(TABLE_HOADON, null, values)
     }
-
     fun addOrderDetail(orderId: Long, productId: Int, quantity: Int, price: Double) {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -430,7 +418,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return orders
     }
-
     fun getOrderDetailsByOrderId(orderId: Int): List<OrderDetail> {
         val orderDetails = mutableListOf<OrderDetail>()
         val db = readableDatabase
@@ -464,10 +451,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return orderDetails
     }
-
-
-
-
     fun getOrdersByUserIdWithDetails(userId: Int): List<Order> {
         val orders = getOrdersByUserId(userId)
         for (order in orders) {
@@ -475,5 +458,156 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         return orders
     }
+// Thêm vào class DatabaseHelper
+    fun getAllOrders(): List<Order> {
+        val orders = mutableListOf<Order>()
+        val db = readableDatabase
+        val query = "SELECT * FROM $TABLE_HOADON"
 
+        val cursor = db.rawQuery(query, null)
+        if (cursor.moveToFirst()) {
+            do {
+                val orderId = cursor.getInt(cursor.getColumnIndexOrThrow("MaHoaDon"))
+                val userId = cursor.getInt(cursor.getColumnIndexOrThrow("MaTaiKhoan"))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow("NgayLap"))
+                val total = cursor.getDouble(cursor.getColumnIndexOrThrow("TongTien"))
+                val status = cursor.getInt(cursor.getColumnIndexOrThrow("TrangThai"))
+                val address = cursor.getString(cursor.getColumnIndexOrThrow("DiaChi"))
+                val phone = cursor.getString(cursor.getColumnIndexOrThrow("Sdt"))
+                val paymentMethod = cursor.getInt(cursor.getColumnIndexOrThrow("MaHinhThuc"))
+
+                val orderDetails = getOrderDetailsByOrderId(orderId)
+                val order = Order(orderId, userId, date, total, status, address, phone, paymentMethod, orderDetails)
+
+                orders.add(order)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return orders
+    }
+    fun getOrdersByDay(date: String): List<Order> {
+        val orders = mutableListOf<Order>()
+        val db = readableDatabase
+        val query = "SELECT * FROM $TABLE_HOADON WHERE strftime('%Y-%m-%d', NgayLap) = ?"
+        val cursor = db.rawQuery(query, arrayOf(date))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val orderId = cursor.getInt(cursor.getColumnIndexOrThrow("MaHoaDon"))
+                val userId = cursor.getInt(cursor.getColumnIndexOrThrow("MaTaiKhoan"))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow("NgayLap"))
+                val total = cursor.getDouble(cursor.getColumnIndexOrThrow("TongTien"))
+                val status = cursor.getInt(cursor.getColumnIndexOrThrow("TrangThai"))
+                val address = cursor.getString(cursor.getColumnIndexOrThrow("DiaChi"))
+                val phone = cursor.getString(cursor.getColumnIndexOrThrow("Sdt"))
+                val paymentMethod = cursor.getInt(cursor.getColumnIndexOrThrow("MaHinhThuc"))
+
+                val orderDetails = getOrderDetailsByOrderId(orderId)
+                val order = Order(orderId, userId, date, total, status, address, phone, paymentMethod, orderDetails)
+
+                orders.add(order)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return orders
+    }
+    fun getOrdersByWeek(week: Int, year: Int): List<Order> {
+        val orders = mutableListOf<Order>()
+        val db = readableDatabase
+        val query = """
+        SELECT * FROM $TABLE_HOADON 
+        WHERE strftime('%Y', NgayLap) = ? 
+        AND strftime('%W', NgayLap) = ?
+    """
+        val cursor = db.rawQuery(query, arrayOf(year.toString(), week.toString()))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val orderId = cursor.getInt(cursor.getColumnIndexOrThrow("MaHoaDon"))
+                val userId = cursor.getInt(cursor.getColumnIndexOrThrow("MaTaiKhoan"))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow("NgayLap"))
+                val total = cursor.getDouble(cursor.getColumnIndexOrThrow("TongTien"))
+                val status = cursor.getInt(cursor.getColumnIndexOrThrow("TrangThai"))
+                val address = cursor.getString(cursor.getColumnIndexOrThrow("DiaChi"))
+                val phone = cursor.getString(cursor.getColumnIndexOrThrow("Sdt"))
+                val paymentMethod = cursor.getInt(cursor.getColumnIndexOrThrow("MaHinhThuc"))
+
+                val orderDetails = getOrderDetailsByOrderId(orderId)
+                val order = Order(orderId, userId, date, total, status, address, phone, paymentMethod, orderDetails)
+
+                orders.add(order)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return orders
+    }
+    fun getOrdersByMonth(month: Int, year: Int): List<Order> {
+        val orders = mutableListOf<Order>()
+        val db = readableDatabase
+        val query = """
+        SELECT * FROM $TABLE_HOADON 
+        WHERE strftime('%Y', NgayLap) = ? 
+        AND strftime('%m', NgayLap) = ?
+    """
+        val cursor = db.rawQuery(query, arrayOf(year.toString(), month.toString().padStart(2, '0')))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val orderId = cursor.getInt(cursor.getColumnIndexOrThrow("MaHoaDon"))
+                val userId = cursor.getInt(cursor.getColumnIndexOrThrow("MaTaiKhoan"))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow("NgayLap"))
+                val total = cursor.getDouble(cursor.getColumnIndexOrThrow("TongTien"))
+                val status = cursor.getInt(cursor.getColumnIndexOrThrow("TrangThai"))
+                val address = cursor.getString(cursor.getColumnIndexOrThrow("DiaChi"))
+                val phone = cursor.getString(cursor.getColumnIndexOrThrow("Sdt"))
+                val paymentMethod = cursor.getInt(cursor.getColumnIndexOrThrow("MaHinhThuc"))
+
+                val orderDetails = getOrderDetailsByOrderId(orderId)
+                val order = Order(orderId, userId, date, total, status, address, phone, paymentMethod, orderDetails)
+
+                orders.add(order)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return orders
+    }
+    fun getOrdersByYear(year: Int): List<Order> {
+        val orders = mutableListOf<Order>()
+        val db = readableDatabase
+        val query = """
+        SELECT * FROM $TABLE_HOADON 
+        WHERE strftime('%Y', NgayLap) = ?
+    """
+        val cursor = db.rawQuery(query, arrayOf(year.toString()))
+
+        if (cursor.moveToFirst()) {
+            do {
+                val orderId = cursor.getInt(cursor.getColumnIndexOrThrow("MaHoaDon"))
+                val userId = cursor.getInt(cursor.getColumnIndexOrThrow("MaTaiKhoan"))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow("NgayLap"))
+                val total = cursor.getDouble(cursor.getColumnIndexOrThrow("TongTien"))
+                val status = cursor.getInt(cursor.getColumnIndexOrThrow("TrangThai"))
+                val address = cursor.getString(cursor.getColumnIndexOrThrow("DiaChi"))
+                val phone = cursor.getString(cursor.getColumnIndexOrThrow("Sdt"))
+                val paymentMethod = cursor.getInt(cursor.getColumnIndexOrThrow("MaHinhThuc"))
+
+                val orderDetails = getOrderDetailsByOrderId(orderId)
+                val order = Order(orderId, userId, date, total, status, address, phone, paymentMethod, orderDetails)
+
+                orders.add(order)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return orders
+    }
 }

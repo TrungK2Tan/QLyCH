@@ -8,7 +8,7 @@ import com.example.quanlych.databinding.ItemOrderBinding
 import com.example.quanlych.model.Order
 import java.text.NumberFormat
 
-class OrderAdapter(private val orders: List<Order>) : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
+class OrderAdapter(private var orders: List<Order>) : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
 
     inner class OrderViewHolder(private val binding: ItemOrderBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(order: Order) {
@@ -20,6 +20,10 @@ class OrderAdapter(private val orders: List<Order>) : RecyclerView.Adapter<Order
             binding.recyclerViewOrderDetails.layoutManager = LinearLayoutManager(binding.root.context)
             binding.recyclerViewOrderDetails.adapter = OrderDetailAdapter(order.orderDetails)
         }
+    }
+    fun updateOrders(newOrders: List<Order>) {
+        orders = newOrders
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderViewHolder {
