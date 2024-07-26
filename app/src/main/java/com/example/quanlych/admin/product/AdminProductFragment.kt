@@ -41,7 +41,7 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
         databaseHelper = DatabaseHelper(requireContext())
 
         // Add test product for testing purposes
-        databaseHelper.addTestProduct()
+//        databaseHelper.addTestProduct()
 
         loadProducts()
 

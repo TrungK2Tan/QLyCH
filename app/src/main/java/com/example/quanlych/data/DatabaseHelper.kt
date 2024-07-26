@@ -610,4 +610,27 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
         return orders
     }
+    fun addCategory(categoryName: String) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("TenLoaiSanPham", categoryName)
+        }
+        db.insert(TABLE_LOAISANPHAM, null, values)
+    }
+    fun deleteCategory(categoryId: Int) {
+        val db = writableDatabase
+        db.delete(TABLE_LOAISANPHAM, "MaLoaiSanPham = ?", arrayOf(categoryId.toString()))
+        db.close()
+    }
+    fun updateCategory(categoryId: Int, newName: String) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("TenLoaiSanPham", newName)
+        }
+        val selection = "MaLoaiSanPham = ?"
+        val selectionArgs = arrayOf(categoryId.toString())
+
+        db.update(TABLE_LOAISANPHAM, values, selection, selectionArgs)
+        db.close()
+    }
 }
