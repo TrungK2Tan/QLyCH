@@ -633,4 +633,59 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.update(TABLE_LOAISANPHAM, values, selection, selectionArgs)
         db.close()
     }
+
+    fun getTotalProductsCount(date: String?): Int {
+        val db = this.readableDatabase
+
+        val query = when {
+            date.isNullOrEmpty() -> {
+                "SELECT SUM(SoLuong) FROM $TABLE_CHITIETHOADON"
+            }
+            date.contains("/") -> {
+                val parts = date.split("/")
+                when (parts.size) {
+                    3 -> { // Format: day/month/year
+                        val (day, month, year) = parts.map { it.padStart(2, '0') }
+                        "SELECT SUM(SoLuong) FROM $TABLE_CHITIETHOADON " +
+                                "INNER JOIN $TABLE_HOADON ON $TABLE_CHITIETHOADON.MaHoaDon = $TABLE_HOADON.MaHoaDon " +
+                                "WHERE strftime('%d', $TABLE_HOADON.NgayLap) = '$day' " +
+                                "AND strftime('%m', $TABLE_HOADON.NgayLap) = '$month' " +
+                                "AND strftime('%Y', $TABLE_HOADON.NgayLap) = '$year'"
+                    }
+                    2 -> { // Format: month/year (MM/YYYY)
+                        val (month, year) = parts
+                        val formattedMonth = month.padStart(2, '0')
+                        "SELECT SUM(SoLuong) FROM $TABLE_CHITIETHOADON " +
+                                "INNER JOIN $TABLE_HOADON ON $TABLE_CHITIETHOADON.MaHoaDon = $TABLE_HOADON.MaHoaDon " +
+                                "WHERE strftime('%m', $TABLE_HOADON.NgayLap) = '$formattedMonth' " +
+                                "AND strftime('%Y', $TABLE_HOADON.NgayLap) = '$year'"
+                    }
+                    else -> {
+                        "SELECT SUM(SoLuong) FROM $TABLE_CHITIETHOADON"
+                    }
+                }
+            }
+            date.length == 4 -> { // Format: year (YYYY)
+                "SELECT SUM(SoLuong) FROM $TABLE_CHITIETHOADON " +
+                        "INNER JOIN $TABLE_HOADON ON $TABLE_CHITIETHOADON.MaHoaDon = $TABLE_HOADON.MaHoaDon " +
+                        "WHERE strftime('%Y', $TABLE_HOADON.NgayLap) = '$date'"
+            }
+            else -> {
+                "SELECT SUM(SoLuong) FROM $TABLE_CHITIETHOADON"
+            }
+        }
+
+        // Debugging: print the query
+        println("SQL Query: $query")
+
+        val cursor = db.rawQuery(query, null)
+        val total = cursor.use {
+            if (it.moveToFirst()) it.getInt(0) else 0
+        }
+        db.close()
+        return total
+    }
+
+
+
 }

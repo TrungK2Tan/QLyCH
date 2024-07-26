@@ -1,14 +1,16 @@
-package com.example.quanlych.admin.chart
-
-
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.example.quanlych.data.DatabaseHelper
 
-class AdminChartViewModel : ViewModel() {
+class AdminChartViewModel(application: Application) : AndroidViewModel(application) {
+    private val _totalProductsCount = MutableLiveData<Int>()
+    val totalProductsCount: LiveData<Int> get() = _totalProductsCount
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "THỐNG KÊ"
+    private val databaseHelper = DatabaseHelper(application)
+
+    fun loadProductsCount(date: String?) {
+        _totalProductsCount.value = databaseHelper.getTotalProductsCount(date)
     }
-    val text: LiveData<String> = _text
 }

@@ -1,37 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/text_adminchart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="7dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="8dp"
 
+    <!-- Spinner to Select Date, Month or Year -->
+    <Spinner
+        android:id="@+id/spinnerDateType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:entries="@array/date_options"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textSelectedDate" />
+
+
+    <TextView
+        android:id="@+id/textSelectedDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Selected Date"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- CardViews with content -->
     <LinearLayout
         android:id="@+id/row1"
-        android:layout_width="408dp"
-        android:layout_height="174dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/spinnerDateType">
 
+        <!-- Card for Total Products -->
         <androidx.cardview.widget.CardView
             android:id="@+id/clCard"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
             app:cardCornerRadius="20dp"
@@ -39,18 +53,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/sumproduct"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/productImg"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
-                    android:text="25"
-                    android:textColor="@color/lavender"
-                    android:textSize="20sp" />
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/productImg"
@@ -59,12 +62,36 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="15dp"
                     android:src="@drawable/n" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginTop="96dp"
+                    android:layout_marginEnd="64dp"
+                    android:layout_toStartOf="@+id/sumproduct"
+                    android:text="Tổng SP:"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/sumproduct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/productImg"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="16dp"
+                    android:text="20"
+                    android:textColor="@color/lavender"
+                    android:textSize="15sp" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Card for Customers -->
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
             app:cardCornerRadius="20dp"
@@ -72,19 +99,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/sumuser"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/userImg"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
-
-                    android:text="7"
-                    android:textColor="@color/lavender"
-                    android:textSize="20sp" />
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/userImg"
@@ -93,107 +108,49 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="15dp"
                     android:src="@drawable/nn" />
-            </RelativeLayout>
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/row3"
-        android:layout_width="408dp"
-        android:layout_height="174dp"
-        android:layout_marginTop="188dp"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/clothingCard"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="20dp">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/hangton"
+                    android:id="@+id/textView1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/productImage"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
-                    android:text="25"
-                    android:textColor="@color/lavender"
-                    android:textSize="20sp" />
-
-                <ImageView
-                    android:id="@+id/productImage"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="15dp"
-                    android:src="@drawable/nnn" />
-            </RelativeLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="20dp">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="96dp"
+                    android:text="Khách hàng:"
+                    android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/spbanduoc"
+                    android:id="@+id/sumuser"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/userImage"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
-
+                    android:layout_below="@id/userImg"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginEnd="34dp"
+                    android:layout_marginBottom="16dp"
                     android:text="7"
                     android:textColor="@color/lavender"
-                    android:textSize="20sp" />
-
-                <ImageView
-                    android:id="@+id/userImage"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="15dp"
-                    android:src="@drawable/nnnn" />
+                    android:textSize="16sp" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 
+    <!-- Additional Rows -->
     <LinearLayout
         android:id="@+id/row2"
-        android:layout_width="408dp"
-        android:layout_height="174dp"
-        android:layout_marginTop="376dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintTop_toBottomOf="@id/row1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Card for Total Amount -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cloCard"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
             app:cardCornerRadius="20dp"
@@ -201,18 +158,18 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/tongtien"
+                    android:id="@+id/txt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/tongtienImage"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
-                    android:text="25"
-                    android:textColor="@color/lavender"
-                    android:textSize="20sp" />
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="96dp"
+                    android:text="Doanh thu:"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/tongtienImage"
@@ -221,12 +178,24 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="15dp"
                     android:src="@drawable/nnnnn" />
+
+                <TextView
+                    android:id="@+id/tongtien"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="52dp"
+                    android:text="25"
+                    android:textColor="@color/lavender"
+                    android:textSize="20sp" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Card for Other Info -->
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
             app:cardCornerRadius="20dp"
@@ -234,19 +203,18 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/jj"
+                    android:id="@+id/tx"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/jjImage"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
-
-                    android:text="7"
-                    android:textColor="@color/lavender"
-                    android:textSize="20sp" />
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="96dp"
+                    android:text="Doanh thu:"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/jjImage"
@@ -255,7 +223,18 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="15dp"
                     android:src="@drawable/user" />
+
+                <TextView
+                    android:id="@+id/ts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:text="7"
+                    android:textColor="@color/lavender"
+                    android:textSize="20sp" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
