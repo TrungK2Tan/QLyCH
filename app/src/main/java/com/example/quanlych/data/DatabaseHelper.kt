@@ -298,7 +298,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return orders
     }
-
     fun getProductsByCategory(categoryId: Int): List<Product> {
         val productList = mutableListOf<Product>()
         val db = this.readableDatabase
@@ -695,7 +694,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return orders
     }
-
     fun getOrderDetailsByOrderId(orderId: Int): List<OrderDetail> {
         val orderDetails = mutableListOf<OrderDetail>()
         val db = readableDatabase
@@ -729,7 +727,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return orderDetails
     }
-
     // Add this method in DatabaseHelper
     fun getOrdersByUserIdWithDetails(userId: Int): List<Order> {
         val db = readableDatabase
@@ -824,7 +821,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         statement.executeUpdateDelete()
         db.close()
     }
-
     fun updateOrder(order: Order): Boolean {
         val db = writableDatabase
         val contentValues = ContentValues().apply {
@@ -839,7 +835,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         val result = db.update(TABLE_HOADON, contentValues, "MaHoaDon = ?", arrayOf(order.id.toString()))
         return result > 0
     }
-
     // Thêm vào class DatabaseHelper
     fun getAllOrders(): List<Order> {
         val orders = mutableListOf<Order>()
@@ -1114,7 +1109,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
         return total.toDouble()
     }
-
     fun searchCategories(query: String): List<Category> {
         val categories = mutableListOf<Category>()
         val db = readableDatabase

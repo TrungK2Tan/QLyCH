@@ -15,7 +15,7 @@ class OrderAdapter(private var orders: List<Order>) : RecyclerView.Adapter<Order
             binding.txtOrderId.text = order.id.toString()
             binding.txtOrderDate.text = order.date
             binding.txtOrderTotal.text = NumberFormat.getInstance().format(order.total) + " đ"
-
+            binding.txtUserId.text = "Ma Tai Khoan: " + order.userId.toString() // Hiển thị userId
             // Set up the RecyclerView for order details
             binding.recyclerViewOrderDetails.layoutManager = LinearLayoutManager(binding.root.context)
             binding.recyclerViewOrderDetails.adapter = OrderDetailAdapter(order.orderDetails)

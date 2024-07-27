@@ -9,6 +9,8 @@ class OrderRepository(private val context: Context) {
     fun getAllOrders(): List<Order> {
         return dbHelper.getAllOrders()
     }
+    // Thêm phương thức để lấy tên tài khoản từ MaTaiKhoan
+
     fun searchOrders(query: String): List<Order> {
         return dbHelper.searchOrders(query)  // Ensure this returns a List<Order>
     }
