@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="16dp"
-            android:text="Product Name"
+            android:text="Tên Sản Phẩm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/imgProduct"
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="Quantity"
+            android:text="Số Lượng"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imgProduct"
             app:layout_constraintTop_toBottomOf="@+id/txtProductName"
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="Price"
+            android:text="Giá"
             app:layout_constraintStart_toEndOf="@+id/imgProduct"
             tools:layout_editor_absoluteY="54dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>

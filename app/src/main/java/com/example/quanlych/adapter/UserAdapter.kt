@@ -17,7 +17,7 @@ class UserAdapter(private var userList: List<User>) : RecyclerView.Adapter<UserA
             // Set default user image
             binding.UserImage.setImageResource(R.drawable.people)
             // Set details image
-            binding.imgdetails.setImageResource(R.drawable.details)
+//            binding.imgdetails.setImageResource(R.drawable.details)
         }
     }
 

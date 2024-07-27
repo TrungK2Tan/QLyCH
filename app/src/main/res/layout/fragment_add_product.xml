@@ -13,7 +13,7 @@
         android:padding="16dp"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
-        android:hint="Product Name" />
+        android:hint="Tên Sản Phẩm" />
 
     <!-- Product Description EditText -->
     <EditText
@@ -23,7 +23,7 @@
         android:padding="16dp"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
-        android:hint="Product Description" />
+        android:hint="Mô Tả Sản Phẩm" />
 
     <!-- Image URL EditText -->
     <EditText
@@ -33,7 +33,7 @@
         android:padding="16dp"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
-        android:hint="Enter Image URL" />
+        android:hint="Đường Dẫn Hình Ảnh" />
 
     <!-- Product Price EditText -->
     <EditText
@@ -43,7 +43,7 @@
         android:padding="16dp"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
-        android:hint="Product Price" />
+        android:hint="Giá Sản Phẩm" />
 
     <!-- Product Category Spinner -->
     <Spinner
@@ -62,6 +62,6 @@
         android:layout_gravity="center"
         android:padding="16dp"
         android:layout_marginTop="16dp"
-        android:text="Save Product" />
+        android:text="Lưu" />
 
 </LinearLayout>

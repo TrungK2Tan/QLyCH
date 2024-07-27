@@ -1,4 +1,5 @@
 package com.example.quanlych.admin.chart
+
 import AdminChartViewModel
 import MonthPickerDialog
 import YearPickerDialog
@@ -10,10 +11,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.DatePicker
 import android.widget.Spinner
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-
 import com.example.quanlych.databinding.FragmentAdminChartBinding
 import java.util.*
 
@@ -23,7 +22,7 @@ class AdminChartFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var adminChartViewModel: AdminChartViewModel
 
-    private var currentSelectedDateType = -1 // Lưu loại ngày hiện tại để xử lý việc mở lại các dialog
+    private var currentSelectedDateType = -1 // Keep track of the current date type
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,15 +32,21 @@ class AdminChartFragment : Fragment() {
         _binding = FragmentAdminChartBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Quan sát LiveData để cập nhật TextView khi dữ liệu thay đổi
+        // Observe LiveData to update UI
         adminChartViewModel.totalProductsCount.observe(viewLifecycleOwner) { count ->
             binding.sumproduct.text = count.toString()
         }
-        adminChartViewModel.totalCoinCount.observe(viewLifecycleOwner) { count ->
-            binding.tongtien.text = count.toString()
+
+        adminChartViewModel.totalRevenue.observe(viewLifecycleOwner) { revenue ->
+            binding.tongtien.text = "${revenue} VND"
         }
 
-        // Thiết lập Spinner và các dialog
+
+        adminChartViewModel.totalAccountCount.observe(viewLifecycleOwner) { count ->
+            binding.sumuser.text = count.toString()
+        }
+
+        // Setup Spinner and Date Pickers
         setupSpinner()
 
         return root
@@ -54,15 +59,15 @@ class AdminChartFragment : Fragment() {
                 if (position != currentSelectedDateType) {
                     currentSelectedDateType = position
                     when (position) {
-                        0 -> showDatePicker() // Ngày
-                        1 -> showMonthPicker() // Tháng
-                        2 -> showYearPicker() // Năm
+                        0 -> showDatePicker() // Date
+                        1 -> showMonthPicker() // Month
+                        2 -> showYearPicker() // Year
                     }
                 }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Xử lý nếu không có mục nào được chọn
+                // Handle case where no item is selected
             }
         }
     }
@@ -74,10 +79,11 @@ class AdminChartFragment : Fragment() {
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
         DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
-            val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+            val selectedDate = "${selectedDay.toString().padStart(2, '0')}/${(selectedMonth + 1).toString().padStart(2, '0')}/$selectedYear"
             binding.textSelectedDate.text = selectedDate
             adminChartViewModel.loadProductsCount(selectedDate)
-            adminChartViewModel.loadcoinCount(selectedDate)
+            adminChartViewModel.loadTotalRevenue(selectedDate)
+            adminChartViewModel.loadAccountCount(selectedDate)
         }, year, month, day).show()
     }
 
@@ -89,7 +95,8 @@ class AdminChartFragment : Fragment() {
             val selectedDate = "$formattedMonth/$year"
             binding.textSelectedDate.text = selectedDate
             adminChartViewModel.loadProductsCount(selectedDate)
-            adminChartViewModel.loadcoinCount(selectedDate)
+            adminChartViewModel.loadTotalRevenue(selectedDate)
+            adminChartViewModel.loadAccountCount(selectedDate)
         }
         dialog.show(parentFragmentManager, "MonthPickerDialog")
     }
@@ -99,7 +106,8 @@ class AdminChartFragment : Fragment() {
         dialog.setOnDateSetListener { selectedYear ->
             binding.textSelectedDate.text = selectedYear.toString()
             adminChartViewModel.loadProductsCount(selectedYear.toString())
-            adminChartViewModel.loadcoinCount(selectedYear.toString())
+            adminChartViewModel.loadTotalRevenue(selectedYear.toString())
+            adminChartViewModel.loadAccountCount(selectedYear.toString())
         }
         dialog.show(parentFragmentManager, "YearPickerDialog")
     }
@@ -112,5 +120,7 @@ class AdminChartFragment : Fragment() {
     fun updateSelectedDate(date: String) {
         binding.textSelectedDate.text = date
         adminChartViewModel.loadProductsCount(date)
+        adminChartViewModel.loadTotalRevenue(date)
+        adminChartViewModel.loadAccountCount(date)
     }
 }

@@ -8,7 +8,7 @@ import com.example.quanlych.databinding.ItemProductBinding
 import com.example.quanlych.model.Product
 
 class ProductAdapter(
-    private val productList: List<Product>,
+    private var productList: List<Product>,
     private val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
@@ -28,6 +28,11 @@ class ProductAdapter(
 
     override fun getItemCount(): Int = productList.size
 
+    fun updateProducts(newProducts: List<Product>) {
+        productList = newProducts
+        notifyDataSetChanged()
+    }
+
     inner class ProductViewHolder(private val binding: ItemProductBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -43,12 +48,13 @@ class ProductAdapter(
 
         fun bind(product: Product) {
             binding.productName.text = product.name
-            binding.productPrice.text = product.price.toString()
+            binding.productPrice.text = "${product.price} đ" // Thêm " VND" vào giá sản phẩm
 
             // Load image from URL or file path using Glide
             Glide.with(binding.productImage.context)
-                .load(product.imageResource) // This should be a URL or file path as a String
+                .load(product.imageResource) // Ensure this is a URL or file path
                 .into(binding.productImage)
         }
+
     }
 }

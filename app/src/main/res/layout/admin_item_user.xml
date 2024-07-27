@@ -11,25 +11,12 @@
         android:layout_width="369dp"
         android:layout_height="107dp">
 
-        <ImageView
-
-            android:id="@+id/imgdetails"
-            android:layout_width="40dp"
-            android:layout_height="37dp"
-            android:layout_marginTop="60dp"
-            android:background="@drawable/productitem_bg1"
-            android:src="@drawable/details"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.951"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <TextView
             android:id="@+id/email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Product Description"
+            android:text="Mô Tả"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.436"
@@ -41,7 +28,7 @@
             android:layout_width="130dp"
             android:layout_height="23dp"
             android:layout_marginTop="20dp"
-            android:text="Product Name"
+            android:text="Tên Sản Phẩm"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"

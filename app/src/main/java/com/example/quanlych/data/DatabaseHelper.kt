@@ -246,9 +246,148 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return orders
     }
+    fun getProductsByCategory(categoryId: Int): List<Product> {
+        val productList = mutableListOf<Product>()
+        val db = this.readableDatabase
+        val query = "SELECT * FROM $TABLE_SANPHAM WHERE MaLoaiSanPham = ?"
+        val cursor = db.rawQuery(query, arrayOf(categoryId.toString()))
 
+        cursor.use {
+            if (cursor.moveToFirst()) {
+                do {
+                    val id = cursor.getInt(cursor.getColumnIndexOrThrow("MaSanPham"))
+                    val name = cursor.getString(cursor.getColumnIndexOrThrow("TenSanPham"))
+                    val image = cursor.getString(cursor.getColumnIndexOrThrow("HinhAnh"))
+                    val description = cursor.getString(cursor.getColumnIndexOrThrow("MoTa"))
+                    val price = cursor.getDouble(cursor.getColumnIndexOrThrow("Gia"))
+                    val status = cursor.getInt(cursor.getColumnIndexOrThrow("TrangThai")) != 0 // Convert Int to Boolean
+                    val quantity = cursor.getInt(cursor.getColumnIndexOrThrow("SoLuong"))
+                    val categoryIdFromDb = cursor.getInt(cursor.getColumnIndexOrThrow("MaLoaiSanPham"))
 
+                    val product = Product(id, name, description, image, price, quantity, status, categoryIdFromDb)
+                    productList.add(product)
+                } while (cursor.moveToNext())
+            }
+        }
+        db.close()
 
+        return productList
+    }
+    fun searchProducts(query: String): List<Product> {
+        val productList = mutableListOf<Product>()
+        val db = this.readableDatabase
+        val searchQuery = """
+        SELECT * FROM $TABLE_SANPHAM
+        WHERE TenSanPham LIKE ? 
+        OR Gia LIKE ? 
+        OR MaLoaiSanPham IN (
+            SELECT MaLoaiSanPham FROM $TABLE_LOAISANPHAM WHERE TenLoaiSanPham LIKE ?
+        )
+    """
+        val cursor = db.rawQuery(
+            searchQuery,
+            arrayOf("%$query%", "%$query%", "%$query%")
+        )
+
+        cursor.use {
+            if (cursor.moveToFirst()) {
+                do {
+                    val id = cursor.getInt(cursor.getColumnIndexOrThrow("MaSanPham"))
+                    val name = cursor.getString(cursor.getColumnIndexOrThrow("TenSanPham"))
+                    val image = cursor.getString(cursor.getColumnIndexOrThrow("HinhAnh"))
+                    val description = cursor.getString(cursor.getColumnIndexOrThrow("MoTa"))
+                    val price = cursor.getDouble(cursor.getColumnIndexOrThrow("Gia"))
+                    val status = cursor.getInt(cursor.getColumnIndexOrThrow("TrangThai")) != 0
+                    val quantity = cursor.getInt(cursor.getColumnIndexOrThrow("SoLuong"))
+                    val categoryIdFromDb = cursor.getInt(cursor.getColumnIndexOrThrow("MaLoaiSanPham"))
+
+                    val product = Product(id, name, description, image, price, quantity, status, categoryIdFromDb)
+                    productList.add(product)
+                } while (cursor.moveToNext())
+            }
+        }
+        db.close()
+
+        return productList
+    }
+    fun getAllCategories(): List<Category> {
+        val categoryList = mutableListOf<Category>()
+        val db = this.readableDatabase
+        val query = "SELECT * FROM $TABLE_LOAISANPHAM"
+        val cursor = db.rawQuery(query, null)
+
+        cursor.use {
+            if (cursor.moveToFirst()) {
+                do {
+                    val id = cursor.getInt(cursor.getColumnIndexOrThrow("MaLoaiSanPham"))
+                    val name = cursor.getString(cursor.getColumnIndexOrThrow("TenLoaiSanPham"))
+                    categoryList.add(Category(id, name))
+                } while (cursor.moveToNext())
+            }
+        }
+        db.close()
+
+        return categoryList
+    }
+    fun getAccountCount(date: String?): Map<Int, Int> {
+        val db = this.readableDatabase
+        val counts = mutableMapOf<Int, Int>()
+
+        // Query to get count of distinct MaTaiKhoan values
+        val query = when {
+            date.isNullOrEmpty() -> {
+                // Count distinct MaTaiKhoan for all records
+                "SELECT COUNT(DISTINCT MaTaiKhoan) AS UniqueAccountCount FROM $TABLE_HOADON"
+            }
+            date.contains("/") -> {
+                val parts = date.split("/")
+                when (parts.size) {
+                    3 -> { // Format: day/month/year
+                        val (day, month, year) = parts.map { it.padStart(2, '0') }
+                        "SELECT COUNT(DISTINCT MaTaiKhoan) AS UniqueAccountCount FROM $TABLE_HOADON " +
+                                "WHERE strftime('%d', NgayLap) = '$day' " +
+                                "AND strftime('%m', NgayLap) = '$month' " +
+                                "AND strftime('%Y', NgayLap) = '$year'"
+                    }
+                    2 -> { // Format: month/year (MM/YYYY)
+                        val (month, year) = parts
+                        val formattedMonth = month.padStart(2, '0')
+                        "SELECT COUNT(DISTINCT MaTaiKhoan) AS UniqueAccountCount FROM $TABLE_HOADON " +
+                                "WHERE strftime('%m', NgayLap) = '$formattedMonth' " +
+                                "AND strftime('%Y', NgayLap) = '$year'"
+                    }
+                    else -> {
+                        "SELECT COUNT(DISTINCT MaTaiKhoan) AS UniqueAccountCount FROM $TABLE_HOADON"
+                    }
+                }
+            }
+            date.length == 4 -> { // Format: year (YYYY)
+                "SELECT COUNT(DISTINCT MaTaiKhoan) AS UniqueAccountCount FROM $TABLE_HOADON " +
+                        "WHERE strftime('%Y', NgayLap) = '$date'"
+            }
+            else -> {
+                "SELECT COUNT(DISTINCT MaTaiKhoan) AS UniqueAccountCount FROM $TABLE_HOADON"
+            }
+        }
+
+        val cursor = db.rawQuery(query, null)
+        cursor.use {
+            val accountCountIndex = it.getColumnIndex("UniqueAccountCount")
+
+            if (accountCountIndex == -1) {
+                Log.e("DatabaseHelper", "Column index error: UniqueAccountCount column not found.")
+                return emptyMap()
+            }
+
+            if (it.moveToFirst()) {
+                val count = it.getInt(accountCountIndex)
+                counts[0] = count
+            }
+        }
+
+        db.close()
+        return counts
+    }
     // Method to fetch all products
     fun getAllProducts(): List<Product> {
         val productList = mutableListOf<Product>()
@@ -720,7 +859,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.update(TABLE_LOAISANPHAM, values, selection, selectionArgs)
         db.close()
     }
-
     fun getTotalProductsCount(date: String?): Int {
         val db = this.readableDatabase
 
@@ -772,7 +910,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
         return total
     }
-
     fun getTotalcoinCount(date: String?): Double {
         val db = this.readableDatabase
 
@@ -821,5 +958,4 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
         return total.toDouble()
     }
-
 }

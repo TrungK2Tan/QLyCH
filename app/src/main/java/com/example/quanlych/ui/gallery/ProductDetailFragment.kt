@@ -44,14 +44,14 @@ class ProductDetailFragment : Fragment() {
         val txtTotalPrice: TextView = view.findViewById(R.id.txt_total_price)
 
         productName.text = product.name
-        productPrice.text = "${product.price}đ"
+        productPrice.text = "${product.price}VND"
         // Use Glide or another library to load images from resources or URLs
         Glide.with(this)
             .load(product.imageResource) // Replace with URL if using online images
             .into(productImage) // Replace with actual image loading logic
         productDescription.text = product.description
 
-        txtTotalPrice.text = "Total: ${product.price * quantity}đ"
+        txtTotalPrice.text = "Tổng Tiền: ${product.price * quantity}VND"
 
         btnIncrement.setOnClickListener {
             quantity++
