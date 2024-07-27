@@ -13,29 +13,25 @@ import java.text.NumberFormat
 
 class OrderDetailAdapter(private val orderDetails: List<OrderDetail>) : RecyclerView.Adapter<OrderDetailAdapter.OrderDetailViewHolder>() {
 
-    inner class OrderDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val txtProductName: TextView = itemView.findViewById(R.id.txtProductName)
-        private val txtProductQuantity: TextView = itemView.findViewById(R.id.txtProductQuantity)
-        private val txtProductPrice: TextView = itemView.findViewById(R.id.txtProductPrice)
-        private val imgProduct: ImageView = itemView.findViewById(R.id.imgProduct)
-        fun bind(orderDetail: OrderDetail) {
-            txtProductName.text = orderDetail.productName
-            txtProductQuantity.text = orderDetail.quantity.toString()
-            txtProductPrice.text = NumberFormat.getInstance().format(orderDetail.price) + " đ"
-            Glide.with(itemView.context)  // Sử dụng itemView.context thay vì context
-                .load(orderDetail.productImage)  // Đảm bảo tên trường khớp với lớp OrderDetail
-                .into(imgProduct)
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderDetailViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_order_detail, parent, false)
         return OrderDetailViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: OrderDetailViewHolder, position: Int) {
-        holder.bind(orderDetails[position])
+        val detail = orderDetails[position]
+        holder.bind(detail)
     }
 
     override fun getItemCount(): Int = orderDetails.size
+
+    class OrderDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(detail: OrderDetail) {
+            itemView.findViewById<TextView>(R.id.txtProductName).text = detail.productName
+            itemView.findViewById<TextView>(R.id.txtProductQuantity).text = "Quantity: ${detail.quantity}"
+            itemView.findViewById<TextView>(R.id.txtProductPrice).text = "Price: ${detail.price}"
+            // Load image using a library like Glide or Picasso
+            Glide.with(itemView.context).load(detail.productImage).into(itemView.findViewById(R.id.imgProduct))
+        }
+    }
 }

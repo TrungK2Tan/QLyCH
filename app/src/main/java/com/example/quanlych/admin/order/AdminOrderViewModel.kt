@@ -18,7 +18,9 @@ class AdminOrderViewModel(private val repository: OrderRepository) : ViewModel()
     fun getAllOrders(): List<Order> {
         return repository.getAllOrders()
     }
-
+    fun searchOrders(query: String) {
+        _orders.value = repository.searchOrders(query)
+    }
     fun getOrdersByDay(date: String): List<Order> {
         return repository.getOrdersByDay(date)
     }

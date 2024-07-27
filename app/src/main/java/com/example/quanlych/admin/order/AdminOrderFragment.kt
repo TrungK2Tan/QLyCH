@@ -1,6 +1,8 @@
 package com.example.quanlych.admin.order
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -59,6 +61,23 @@ class AdminOrderFragment : Fragment() {
         viewModel.orders.observe(viewLifecycleOwner) { orders ->
             binding.recyclerView.adapter = OrderAdapter(orders)
         }
+
+        // Handle search input
+        binding.editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // No-op
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                s?.let {
+                    viewModel.searchOrders(it.toString())
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // No-op
+            }
+        })
     }
 
     private fun filterOrders(filter: String) {
@@ -73,7 +92,6 @@ class AdminOrderFragment : Fragment() {
         (binding.recyclerView.adapter as? OrderAdapter)?.updateOrders(filteredOrders)
     }
 
-    // Helper methods to get current date, week, month, and year
     private fun getCurrentDate(): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return sdf.format(Date())

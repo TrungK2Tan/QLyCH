@@ -162,6 +162,93 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         // Create new tables
         onCreate(db)
     }
+    fun searchOrders(query: String): List<Order> {
+        val db = readableDatabase
+        val orders = mutableListOf<Order>()
+        val orderDetailsMap = mutableMapOf<Int, MutableList<OrderDetail>>()
+
+        // Query to get orders
+        val orderQuery = """
+        SELECT DISTINCT h.MaHoaDon, h.MaTaiKhoan, h.NgayLap, h.TongTien, h.TrangThai, h.DiaChi, h.Sdt, h.MaHinhThuc
+        FROM $TABLE_HOADON h
+        LEFT JOIN $TABLE_CHITIETHOADON c ON h.MaHoaDon = c.MaHoaDon
+        LEFT JOIN $TABLE_SANPHAM s ON c.MaSanPham = s.MaSanPham
+        LEFT JOIN $TABLE_TAIKHOAN t ON h.MaTaiKhoan = t.MaTaiKhoan
+        WHERE h.MaHoaDon LIKE ? 
+        OR t.TenNguoiDung LIKE ? 
+        OR s.TenSanPham LIKE ?
+    """
+        val cursor = db.rawQuery(orderQuery, arrayOf("%$query%", "%$query%", "%$query%"))
+
+        val idIndex = cursor.getColumnIndex("MaHoaDon")
+        val userIdIndex = cursor.getColumnIndex("MaTaiKhoan")
+        val dateIndex = cursor.getColumnIndex("NgayLap")
+        val totalIndex = cursor.getColumnIndex("TongTien")
+        val statusIndex = cursor.getColumnIndex("TrangThai")
+        val addressIndex = cursor.getColumnIndex("DiaChi")
+        val phoneIndex = cursor.getColumnIndex("Sdt")
+        val paymentMethodIndex = cursor.getColumnIndex("MaHinhThuc")
+
+        if (cursor.moveToFirst()) {
+            do {
+                val orderId = cursor.getInt(idIndex)
+                val order = Order(
+                    id = orderId,
+                    userId = cursor.getInt(userIdIndex),
+                    date = cursor.getString(dateIndex) ?: "",
+                    total = cursor.getDouble(totalIndex),
+                    status = cursor.getInt(statusIndex),
+                    address = cursor.getString(addressIndex) ?: "",
+                    phone = cursor.getString(phoneIndex) ?: "",
+                    paymentMethod = cursor.getInt(paymentMethodIndex)
+                )
+                orders.add(order)
+                orderDetailsMap[orderId] = mutableListOf()  // Initialize list for this order
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+
+        // Query to get order details
+        val detailQuery = """
+        SELECT c.MaHoaDon, s.MaSanPham, s.TenSanPham, c.SoLuong, c.Gia, s.HinhAnh
+        FROM $TABLE_CHITIETHOADON c
+        LEFT JOIN $TABLE_SANPHAM s ON c.MaSanPham = s.MaSanPham
+        WHERE c.MaHoaDon IN (${orders.joinToString(",") { it.id.toString() }})
+    """
+        val detailCursor = db.rawQuery(detailQuery, null)
+
+        val orderIdIndex = detailCursor.getColumnIndex("MaHoaDon")
+        val productIdIndex = detailCursor.getColumnIndex("MaSanPham")
+        val productNameIndex = detailCursor.getColumnIndex("TenSanPham")
+        val quantityIndex = detailCursor.getColumnIndex("SoLuong")
+        val priceIndex = detailCursor.getColumnIndex("Gia")
+        val imageIndex = detailCursor.getColumnIndex("HinhAnh")
+
+        if (detailCursor.moveToFirst()) {
+            do {
+                val orderId = detailCursor.getInt(orderIdIndex)
+                val orderDetail = OrderDetail(
+                    productId = detailCursor.getInt(productIdIndex),
+                    productName = detailCursor.getString(productNameIndex) ?: "",
+                    quantity = detailCursor.getInt(quantityIndex),
+                    price = detailCursor.getDouble(priceIndex),
+                    productImage = detailCursor.getString(imageIndex) ?: ""
+                )
+                orderDetailsMap[orderId]?.add(orderDetail)
+            } while (detailCursor.moveToNext())
+        }
+        detailCursor.close()
+
+        // Update orders with their details
+        orders.forEach { order ->
+            order.orderDetails = orderDetailsMap[order.id] ?: emptyList()
+        }
+
+        return orders
+    }
+
+
+
     // Method to fetch all products
     fun getAllProducts(): List<Product> {
         val productList = mutableListOf<Product>()
