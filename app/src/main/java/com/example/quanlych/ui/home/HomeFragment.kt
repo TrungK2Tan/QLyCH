@@ -38,13 +38,13 @@ class HomeFragment : Fragment() {
             binding.textHome.text = it
         }
 
-        // Initialize DatabaseHelper and fetch products
+        // Initialize DatabaseHelper
         val databaseHelper = DatabaseHelper(requireContext())
-        val products = databaseHelper.getAllProducts()
 
-        // Set up RecyclerView with GridLayoutManager
-        binding.recycleview.layoutManager = GridLayoutManager(context, 2) // 2 columns
-        val adapter = ProductAdapter(products, object : ProductAdapter.OnItemClickListener {
+        // Fetch featured products sorted by quantity sold
+        val featuredProducts = databaseHelper.getProductsByQuantitySold()
+        binding.recycleviewFeatured.layoutManager = GridLayoutManager(context, 2) // 2 columns
+        val featuredAdapter = ProductAdapter(featuredProducts, object : ProductAdapter.OnItemClickListener {
             override fun onItemClick(product: Product) {
                 // Create a Bundle to pass product details
                 val bundle = Bundle().apply {
@@ -54,7 +54,22 @@ class HomeFragment : Fragment() {
                 findNavController().navigate(R.id.action_home_to_productdetails, bundle)
             }
         })
-        binding.recycleview.adapter = adapter
+        binding.recycleviewFeatured.adapter = featuredAdapter
+
+        // Fetch all products
+        val allProducts = databaseHelper.getAllProducts() // Add this method in your DatabaseHelper class
+        binding.recycleviewAll.layoutManager = GridLayoutManager(context, 2) // 2 columns
+        val allAdapter = ProductAdapter(allProducts, object : ProductAdapter.OnItemClickListener {
+            override fun onItemClick(product: Product) {
+                // Create a Bundle to pass product details
+                val bundle = Bundle().apply {
+                    putParcelable("product", product)
+                }
+                // Navigate to the product detail screen
+                findNavController().navigate(R.id.action_home_to_productdetails, bundle)
+            }
+        })
+        binding.recycleviewAll.adapter = allAdapter
 
         return root
     }

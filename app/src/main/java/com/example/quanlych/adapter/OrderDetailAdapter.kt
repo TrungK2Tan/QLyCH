@@ -29,7 +29,7 @@ class OrderDetailAdapter(private val orderDetails: List<OrderDetail>) : Recycler
         fun bind(detail: OrderDetail) {
             itemView.findViewById<TextView>(R.id.txtProductName).text = detail.productName
             itemView.findViewById<TextView>(R.id.txtProductQuantity).text = "Quantity: ${detail.quantity}"
-            itemView.findViewById<TextView>(R.id.txtProductPrice).text = "Price: ${detail.price}"
+            itemView.findViewById<TextView>(R.id.txtProductPrice).text = "Price: ${NumberFormat.getInstance().format(detail.price)} đ"
             // Load image using a library like Glide or Picasso
             Glide.with(itemView.context).load(detail.productImage).into(itemView.findViewById(R.id.imgProduct))
         }

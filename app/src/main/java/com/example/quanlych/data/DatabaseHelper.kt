@@ -162,6 +162,54 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         // Create new tables
         onCreate(db)
     }
+    fun getProductsByQuantitySold(): List<Product> {
+        val productList = mutableListOf<Product>()
+        val db = this.readableDatabase
+        val query = """
+        SELECT p.MaSanPham, p.TenSanPham, p.HinhAnh, p.MoTa, p.Gia, p.TrangThai, p.MaLoaiSanPham, 
+               SUM(c.SoLuong) AS TotalQuantitySold
+        FROM $TABLE_SANPHAM p
+        JOIN $TABLE_CHITIETHOADON c ON p.MaSanPham = c.MaSanPham
+        GROUP BY p.MaSanPham
+        ORDER BY TotalQuantitySold DESC
+    """
+        val cursor = db.rawQuery(query, null)
+
+        // Check if cursor has the expected columns
+        val maSanPhamIndex = cursor.getColumnIndex("MaSanPham")
+        val tenSanPhamIndex = cursor.getColumnIndex("TenSanPham")
+        val hinhAnhIndex = cursor.getColumnIndex("HinhAnh")
+        val moTaIndex = cursor.getColumnIndex("MoTa")
+        val giaIndex = cursor.getColumnIndex("Gia")
+        val totalQuantitySoldIndex = cursor.getColumnIndex("TotalQuantitySold")
+        val maLoaiSanPhamIndex = cursor.getColumnIndex("MaLoaiSanPham")
+
+        if (maSanPhamIndex != -1 && tenSanPhamIndex != -1 && hinhAnhIndex != -1 && moTaIndex != -1 &&
+            giaIndex != -1 && totalQuantitySoldIndex != -1 && maLoaiSanPhamIndex != -1) {
+
+            if (cursor.moveToFirst()) {
+                do {
+                    val product = Product(
+                        id = cursor.getInt(maSanPhamIndex),
+                        name = cursor.getString(tenSanPhamIndex),
+                        description = cursor.getString(moTaIndex),
+                        imageResource = cursor.getString(hinhAnhIndex),
+                        price = cursor.getDouble(giaIndex),
+                        quantity = cursor.getInt(totalQuantitySoldIndex), // Use TotalQuantitySold
+                        isSelected = false, // Default value
+                        categoryId = cursor.getInt(maLoaiSanPhamIndex)
+                    )
+                    productList.add(product)
+                } while (cursor.moveToNext())
+            }
+        } else {
+            Log.e("DatabaseHelper", "One or more column indices are invalid.")
+        }
+
+        cursor.close()
+        db.close()
+        return productList
+    }
     fun searchOrders(query: String): List<Order> {
         val db = readableDatabase
         val orders = mutableListOf<Order>()
@@ -200,7 +248,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                     status = cursor.getInt(statusIndex),
                     address = cursor.getString(addressIndex) ?: "",
                     phone = cursor.getString(phoneIndex) ?: "",
-                    paymentMethod = cursor.getInt(paymentMethodIndex)
+                    paymentMethod = cursor.getInt(paymentMethodIndex),
+                    orderDetails = emptyList() // Initialize with empty list
                 )
                 orders.add(order)
                 orderDetailsMap[orderId] = mutableListOf()  // Initialize list for this order
@@ -209,35 +258,38 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
 
         // Query to get order details
-        val detailQuery = """
-        SELECT c.MaHoaDon, s.MaSanPham, s.TenSanPham, c.SoLuong, c.Gia, s.HinhAnh
-        FROM $TABLE_CHITIETHOADON c
-        LEFT JOIN $TABLE_SANPHAM s ON c.MaSanPham = s.MaSanPham
-        WHERE c.MaHoaDon IN (${orders.joinToString(",") { it.id.toString() }})
-    """
-        val detailCursor = db.rawQuery(detailQuery, null)
+        if (orders.isNotEmpty()) {
+            val orderIds = orders.joinToString(",") { it.id.toString() }
+            val detailQuery = """
+            SELECT c.MaHoaDon, s.MaSanPham, s.TenSanPham, c.SoLuong, c.Gia, s.HinhAnh
+            FROM $TABLE_CHITIETHOADON c
+            LEFT JOIN $TABLE_SANPHAM s ON c.MaSanPham = s.MaSanPham
+            WHERE c.MaHoaDon IN ($orderIds)
+        """
+            val detailCursor = db.rawQuery(detailQuery, null)
 
-        val orderIdIndex = detailCursor.getColumnIndex("MaHoaDon")
-        val productIdIndex = detailCursor.getColumnIndex("MaSanPham")
-        val productNameIndex = detailCursor.getColumnIndex("TenSanPham")
-        val quantityIndex = detailCursor.getColumnIndex("SoLuong")
-        val priceIndex = detailCursor.getColumnIndex("Gia")
-        val imageIndex = detailCursor.getColumnIndex("HinhAnh")
+            val orderIdIndex = detailCursor.getColumnIndex("MaHoaDon")
+            val productIdIndex = detailCursor.getColumnIndex("MaSanPham")
+            val productNameIndex = detailCursor.getColumnIndex("TenSanPham")
+            val quantityIndex = detailCursor.getColumnIndex("SoLuong")
+            val priceIndex = detailCursor.getColumnIndex("Gia")
+            val imageIndex = detailCursor.getColumnIndex("HinhAnh")
 
-        if (detailCursor.moveToFirst()) {
-            do {
-                val orderId = detailCursor.getInt(orderIdIndex)
-                val orderDetail = OrderDetail(
-                    productId = detailCursor.getInt(productIdIndex),
-                    productName = detailCursor.getString(productNameIndex) ?: "",
-                    quantity = detailCursor.getInt(quantityIndex),
-                    price = detailCursor.getDouble(priceIndex),
-                    productImage = detailCursor.getString(imageIndex) ?: ""
-                )
-                orderDetailsMap[orderId]?.add(orderDetail)
-            } while (detailCursor.moveToNext())
+            if (detailCursor.moveToFirst()) {
+                do {
+                    val orderId = detailCursor.getInt(orderIdIndex)
+                    val orderDetail = OrderDetail(
+                        productId = detailCursor.getInt(productIdIndex),
+                        productName = detailCursor.getString(productNameIndex) ?: "",
+                        quantity = detailCursor.getInt(quantityIndex),
+                        price = detailCursor.getDouble(priceIndex),
+                        productImage = detailCursor.getString(imageIndex) ?: ""
+                    )
+                    orderDetailsMap[orderId]?.add(orderDetail)
+                } while (detailCursor.moveToNext())
+            }
+            detailCursor.close()
         }
-        detailCursor.close()
 
         // Update orders with their details
         orders.forEach { order ->
@@ -246,6 +298,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return orders
     }
+
     fun getProductsByCategory(categoryId: Int): List<Product> {
         val productList = mutableListOf<Product>()
         val db = this.readableDatabase
@@ -606,9 +659,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         val orders = mutableListOf<Order>()
         val db = readableDatabase
         val query = """
-        SELECT o.MaHoaDon, o.NgayLap, o.TongTien, o.TrangThai, o.DiaChi, o.Sdt, o.MaHinhThuc 
-        FROM $TABLE_HOADON o 
-        WHERE o.MaTaiKhoan = ?
+    SELECT o.MaHoaDon, o.NgayLap, o.TongTien, o.TrangThai, o.DiaChi, o.Sdt, o.MaHinhThuc 
+    FROM $TABLE_HOADON o 
+    WHERE o.MaTaiKhoan = ?
     """
         var cursor: Cursor? = null
 
@@ -617,8 +670,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
             if (cursor.moveToFirst()) {
                 do {
-                    Log.d("DatabaseHelper", "Cursor columns: ${cursor.columnNames.joinToString()}") // Log column names
-
                     val orderId = cursor.getInt(cursor.getColumnIndexOrThrow("MaHoaDon"))
                     val orderDetails = getOrderDetailsByOrderId(orderId)
 
@@ -631,7 +682,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                         address = cursor.getString(cursor.getColumnIndexOrThrow("DiaChi")),
                         phone = cursor.getString(cursor.getColumnIndexOrThrow("Sdt")),
                         paymentMethod = cursor.getInt(cursor.getColumnIndexOrThrow("MaHinhThuc")),
-                        orderDetails = orderDetails // Initialize with order details
+                        orderDetails = orderDetails
                     )
                     orders.add(order)
                 } while (cursor.moveToNext())
@@ -644,14 +695,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return orders
     }
+
     fun getOrderDetailsByOrderId(orderId: Int): List<OrderDetail> {
         val orderDetails = mutableListOf<OrderDetail>()
         val db = readableDatabase
         val query = """
-        SELECT c.MaSanPham, s.TenSanPham, c.SoLuong, c.Gia, s.HinhAnh 
-        FROM $TABLE_CHITIETHOADON c 
-        JOIN $TABLE_SANPHAM s ON c.MaSanPham = s.MaSanPham 
-        WHERE c.MaHoaDon = ?
+    SELECT c.MaSanPham, s.TenSanPham, c.SoLuong, c.Gia, s.HinhAnh 
+    FROM $TABLE_CHITIETHOADON c 
+    JOIN $TABLE_SANPHAM s ON c.MaSanPham = s.MaSanPham 
+    WHERE c.MaHoaDon = ?
     """
         val cursor = db.rawQuery(query, arrayOf(orderId.toString()))
 
@@ -661,14 +713,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val productName = cursor.getString(cursor.getColumnIndexOrThrow("TenSanPham"))
                 val quantity = cursor.getInt(cursor.getColumnIndexOrThrow("SoLuong"))
                 val price = cursor.getDouble(cursor.getColumnIndexOrThrow("Gia"))
-                val productImage = cursor.getString(cursor.getColumnIndexOrThrow("HinhAnh")) // Lấy hình ảnh sản phẩm
+                val productImage = cursor.getString(cursor.getColumnIndexOrThrow("HinhAnh"))
 
                 val orderDetail = OrderDetail(
                     productId = productId,
                     productName = productName,
                     quantity = quantity,
                     price = price,
-                    productImage = productImage // Gán hình ảnh sản phẩm
+                    productImage = productImage
                 )
                 orderDetails.add(orderDetail)
             } while (cursor.moveToNext())
@@ -677,14 +729,108 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return orderDetails
     }
+
+    // Add this method in DatabaseHelper
     fun getOrdersByUserIdWithDetails(userId: Int): List<Order> {
-        val orders = getOrdersByUserId(userId)
-        for (order in orders) {
-            order.orderDetails = getOrderDetailsByOrderId(order.id)
+        val db = readableDatabase
+        val orders = mutableListOf<Order>()
+        val orderDetailsMap = mutableMapOf<Int, MutableList<OrderDetail>>()
+
+        // Query to get orders
+        val orderQuery = """
+        SELECT h.MaHoaDon, h.MaTaiKhoan, h.NgayLap, h.TongTien, h.TrangThai, h.DiaChi, h.Sdt, h.MaHinhThuc
+        FROM $TABLE_HOADON h
+        WHERE h.MaTaiKhoan = ?
+    """
+        val cursor = db.rawQuery(orderQuery, arrayOf(userId.toString()))
+
+        val idIndex = cursor.getColumnIndex("MaHoaDon")
+        val userIdIndex = cursor.getColumnIndex("MaTaiKhoan")
+        val dateIndex = cursor.getColumnIndex("NgayLap")
+        val totalIndex = cursor.getColumnIndex("TongTien")
+        val statusIndex = cursor.getColumnIndex("TrangThai")
+        val addressIndex = cursor.getColumnIndex("DiaChi")
+        val phoneIndex = cursor.getColumnIndex("Sdt")
+        val paymentMethodIndex = cursor.getColumnIndex("MaHinhThuc")
+
+        if (cursor.moveToFirst()) {
+            do {
+                val orderId = cursor.getInt(idIndex)
+                val order = Order(
+                    id = orderId,
+                    userId = cursor.getInt(userIdIndex),
+                    date = cursor.getString(dateIndex) ?: "",
+                    total = cursor.getDouble(totalIndex),
+                    status = cursor.getInt(statusIndex),
+                    address = cursor.getString(addressIndex) ?: "",
+                    phone = cursor.getString(phoneIndex) ?: "",
+                    paymentMethod = cursor.getInt(paymentMethodIndex),
+                    orderDetails = mutableListOf() // Initialize with empty list
+                )
+                orders.add(order)
+                orderDetailsMap[orderId] = mutableListOf() // Initialize list for this order
+            } while (cursor.moveToNext())
         }
+        cursor.close()
+
+        // Query to get order details
+        if (orders.isNotEmpty()) {
+            val orderIds = orders.joinToString(",") { it.id.toString() }
+            val detailQuery = """
+            SELECT c.MaHoaDon, s.MaSanPham, s.TenSanPham, c.SoLuong, c.Gia, s.HinhAnh
+            FROM $TABLE_CHITIETHOADON c
+            LEFT JOIN $TABLE_SANPHAM s ON c.MaSanPham = s.MaSanPham
+            WHERE c.MaHoaDon IN ($orderIds)
+        """
+            val detailCursor = db.rawQuery(detailQuery, null)
+
+            val orderIdIndex = detailCursor.getColumnIndex("MaHoaDon")
+            val productIdIndex = detailCursor.getColumnIndex("MaSanPham")
+            val productNameIndex = detailCursor.getColumnIndex("TenSanPham")
+            val quantityIndex = detailCursor.getColumnIndex("SoLuong")
+            val priceIndex = detailCursor.getColumnIndex("Gia")
+            val imageIndex = detailCursor.getColumnIndex("HinhAnh")
+
+            if (detailCursor.moveToFirst()) {
+                do {
+                    val orderId = detailCursor.getInt(orderIdIndex)
+                    val orderDetail = OrderDetail(
+                        productId = detailCursor.getInt(productIdIndex),
+                        productName = detailCursor.getString(productNameIndex) ?: "",
+                        quantity = detailCursor.getInt(quantityIndex),
+                        price = detailCursor.getDouble(priceIndex),
+                        productImage = detailCursor.getString(imageIndex) ?: ""
+                    )
+                    orderDetailsMap[orderId]?.add(orderDetail) // Add detail to corresponding order
+                } while (detailCursor.moveToNext())
+            }
+            detailCursor.close()
+        }
+
+        // Update orders with their details
+        orders.forEach { order ->
+            order.orderDetails = orderDetailsMap[order.id] ?: emptyList()
+        }
+
         return orders
     }
-// Thêm vào class DatabaseHelper
+
+    fun updateOrder(order: Order): Boolean {
+        val db = writableDatabase
+        val contentValues = ContentValues().apply {
+            put("NgayLap", order.date)
+            put("TongTien", order.total)
+            put("TrangThai", order.status)
+            put("DiaChi", order.address)
+            put("Sdt", order.phone)
+            put("MaHinhThuc", order.paymentMethod)
+        }
+
+        val result = db.update(TABLE_HOADON, contentValues, "MaHoaDon = ?", arrayOf(order.id.toString()))
+        return result > 0
+    }
+
+    // Thêm vào class DatabaseHelper
     fun getAllOrders(): List<Order> {
         val orders = mutableListOf<Order>()
         val db = readableDatabase

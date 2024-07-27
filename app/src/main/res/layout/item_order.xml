@@ -27,12 +27,11 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewOrderDetails"
-            android:layout_width="302dp"
-            android:layout_height="93dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="29dp"
             android:paddingTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

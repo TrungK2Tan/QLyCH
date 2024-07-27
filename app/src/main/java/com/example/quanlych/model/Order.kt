@@ -9,7 +9,7 @@ data class Order(
     val address: String,
     val phone: String,
     val paymentMethod: Int,
-    var orderDetails: List<OrderDetail> = mutableListOf() // Make this mutable to allow updates
+    var orderDetails: List<OrderDetail>  // Make this mutable to allow updates
 )
 
 data class OrderDetail(

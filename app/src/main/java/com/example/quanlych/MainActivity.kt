@@ -113,9 +113,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         databaseHelper = DatabaseHelper(this)
-
-        // Add a test product
-        // databaseHelper.addTestProduct()
+//
+//         Add a test product
+         databaseHelper.addTestProduct()
 
         // Retrieve and log all products to check if the test product was added
         val products = databaseHelper.getAllProducts()

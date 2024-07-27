@@ -21,6 +21,7 @@ class OrderAdapter(private var orders: List<Order>) : RecyclerView.Adapter<Order
             binding.recyclerViewOrderDetails.adapter = OrderDetailAdapter(order.orderDetails)
         }
     }
+
     fun updateOrders(newOrders: List<Order>) {
         orders = newOrders
         notifyDataSetChanged()

@@ -15,6 +15,7 @@ import com.example.quanlych.R
 import com.example.quanlych.data.DatabaseHelper
 import com.example.quanlych.databinding.FragmentAdminProductBinding
 import com.example.quanlych.model.Product
+import java.util.Locale
 
 class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
 
@@ -40,15 +41,22 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
 
         databaseHelper = DatabaseHelper(requireContext())
 
-        // Add test product for testing purposes
-//        databaseHelper.addTestProduct()
+        // Ensure the locale is set to Vietnamese if necessary
+        val locale = Locale("vi") // Vietnamese
+        Locale.setDefault(locale)
+        val config = resources.configuration
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
 
+        // Load products
         loadProducts()
 
+        // Set up FloatingActionButton
         binding.floatingActionButton.setOnClickListener {
             findNavController().navigate(R.id.action_admin_to_addproduct)
         }
 
+        // Set up SearchView for product filtering
         binding.searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 filterProducts(query)
@@ -80,7 +88,6 @@ class AdminProductFragment : Fragment(), ProductAdapter.OnItemClickListener {
             Log.e("AdminProductFragment", "Error loading products", e)
         }
     }
-
 
     private fun filterProducts(query: String?) {
         val filtered = if (query.isNullOrEmpty()) {
