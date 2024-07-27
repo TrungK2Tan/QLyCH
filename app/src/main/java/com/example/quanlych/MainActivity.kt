@@ -17,6 +17,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.quanlych.data.DatabaseHelper
 import com.example.quanlych.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -87,7 +88,7 @@ class MainActivity : AppCompatActivity() {
             when (destination.id) {
                 R.id.nav_login, R.id.nav_register, R.id.nav_admin_home,
                 R.id.nav_admin_chart, R.id.nav_admin_user, R.id.nav_admin_product,
-                R.id.nav_admin_order ,R.id.nav_category-> {
+                R.id.nav_admin_order ,R.id.nav_category , R.id.nav_gallery,R.id.nav_cart-> {
                     binding.appBarMain.toolbar.visibility = View.GONE
                 }
                 else -> {
@@ -100,14 +101,21 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val fab: View = findViewById(R.id.fab)
             fab.visibility = if (destination.id in listOf(
-                    R.id.nav_admin_user, R.id.nav_admin_product,R.id.nav_category,R.id.nav_login, R.id.nav_admin_home,R.id.nav_admin_chart,R.id.nav_admin_order
+                    R.id.nav_register,R.id.nav_admin_user, R.id.nav_admin_product, R.id.nav_category, R.id.nav_login, R.id.nav_admin_home, R.id.nav_admin_chart, R.id.nav_admin_order
                 )) View.GONE else View.VISIBLE
+        }
+
+        // Set up FloatingActionButton click listener
+        val fab: FloatingActionButton = findViewById(R.id.fab)
+        fab.setOnClickListener {
+            // Navigate to the CartFragment
+            navController.navigate(R.id.nav_cart)
         }
 
         databaseHelper = DatabaseHelper(this)
 
         // Add a test product
-//        databaseHelper.addTestProduct()
+        // databaseHelper.addTestProduct()
 
         // Retrieve and log all products to check if the test product was added
         val products = databaseHelper.getAllProducts()

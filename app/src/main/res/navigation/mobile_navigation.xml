@@ -9,7 +9,11 @@
         android:id="@+id/nav_home"
         android:name="com.example.quanlych.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_to_productdetails"
+            app:destination="@id/nav_productdetails" />
+    </fragment>
     <fragment
         android:id="@+id/nav_gallery"
         android:name="com.example.quanlych.ui.gallery.GalleryFragment"
@@ -81,6 +85,9 @@
         android:name="com.example.quanlych.admin.home.AdminHomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_admin_home" >
+        <action
+            android:id="@+id/action_adminhome_to_login"
+            app:destination="@id/nav_login" />
     <action
         android:id="@+id/action_home_to_chart"
         app:destination="@id/nav_admin_chart" />

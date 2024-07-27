@@ -74,7 +74,6 @@
                     android:layout_toStartOf="@+id/sumproduct"
                     android:text="Tổng SP:"
                     android:textStyle="bold" />
-
                 <TextView
                     android:id="@+id/sumproduct"
                     android:layout_width="wrap_content"
@@ -165,9 +164,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="22dp"
                     android:layout_marginTop="96dp"
+                    android:layout_marginEnd="64dp"
                     android:text="Doanh thu:"
                     android:textStyle="bold" />
 
@@ -185,7 +184,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="10dp"
-                    android:layout_marginEnd="52dp"
+                    android:layout_marginEnd="21dp"
                     android:text="25"
                     android:textColor="@color/lavender"
                     android:textSize="20sp" />

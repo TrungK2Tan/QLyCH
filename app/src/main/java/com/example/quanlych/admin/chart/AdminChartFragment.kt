@@ -37,6 +37,9 @@ class AdminChartFragment : Fragment() {
         adminChartViewModel.totalProductsCount.observe(viewLifecycleOwner) { count ->
             binding.sumproduct.text = count.toString()
         }
+        adminChartViewModel.totalCoinCount.observe(viewLifecycleOwner) { count ->
+            binding.tongtien.text = count.toString()
+        }
 
         // Thiết lập Spinner và các dialog
         setupSpinner()
@@ -74,6 +77,7 @@ class AdminChartFragment : Fragment() {
             val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
             binding.textSelectedDate.text = selectedDate
             adminChartViewModel.loadProductsCount(selectedDate)
+            adminChartViewModel.loadcoinCount(selectedDate)
         }, year, month, day).show()
     }
 
@@ -85,6 +89,7 @@ class AdminChartFragment : Fragment() {
             val selectedDate = "$formattedMonth/$year"
             binding.textSelectedDate.text = selectedDate
             adminChartViewModel.loadProductsCount(selectedDate)
+            adminChartViewModel.loadcoinCount(selectedDate)
         }
         dialog.show(parentFragmentManager, "MonthPickerDialog")
     }
@@ -94,6 +99,7 @@ class AdminChartFragment : Fragment() {
         dialog.setOnDateSetListener { selectedYear ->
             binding.textSelectedDate.text = selectedYear.toString()
             adminChartViewModel.loadProductsCount(selectedYear.toString())
+            adminChartViewModel.loadcoinCount(selectedYear.toString())
         }
         dialog.show(parentFragmentManager, "YearPickerDialog")
     }

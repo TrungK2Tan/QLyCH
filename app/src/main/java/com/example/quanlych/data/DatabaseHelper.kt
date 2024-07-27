@@ -686,6 +686,53 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return total
     }
 
+    fun getTotalcoinCount(date: String?): Double {
+        val db = this.readableDatabase
 
+        val query = when {
+            date.isNullOrEmpty() -> {
+                "SELECT SUM(TongTien) FROM $TABLE_HOADON"
+            }
+            date.contains("/") -> {
+                val parts = date.split("/")
+                when (parts.size) {
+                    3 -> { // Format: day/month/year
+                        val (day, month, year) = parts.map { it.padStart(2, '0') }
+                        "SELECT SUM(TongTien) FROM $TABLE_HOADON " +
+                                "WHERE strftime('%d', $TABLE_HOADON.NgayLap) = '$day' " +
+                                "AND strftime('%m', $TABLE_HOADON.NgayLap) = '$month' " +
+                                "AND strftime('%Y', $TABLE_HOADON.NgayLap) = '$year'"
+                    }
+                    2 -> { // Format: month/year (MM/YYYY)
+                        val (month, year) = parts
+                        val formattedMonth = month.padStart(2, '0')
+                        "SELECT SUM(TongTien) FROM $TABLE_HOADON " +
+                                "WHERE strftime('%m', $TABLE_HOADON.NgayLap) = '$formattedMonth' " +
+                                "AND strftime('%Y', $TABLE_HOADON.NgayLap) = '$year'"
+                    }
+                    else -> {
+                        "SELECT SUM(TongTien) FROM $TABLE_HOADON"
+                    }
+                }
+            }
+            date.length == 4 -> { // Format: year (YYYY)
+                "SELECT SUM(TongTien) FROM $TABLE_HOADON " +
+                        "WHERE strftime('%Y', $TABLE_HOADON.NgayLap) = '$date'"
+            }
+            else -> {
+                "SELECT SUM(TongTien) FROM $TABLE_HOADON"
+            }
+        }
+
+        // Debugging: print the query
+        println("SQL Query: $query")
+
+        val cursor = db.rawQuery(query, null)
+        val total = cursor.use {
+            if (it.moveToFirst()) it.getInt(0) else 0
+        }
+        db.close()
+        return total.toDouble()
+    }
 
 }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,14 +23,13 @@ class AdminHomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val AdminhomeViewModel =
-            ViewModelProvider(this).get(AdminHomeViewModel::class.java)
+        val adminHomeViewModel = ViewModelProvider(this).get(AdminHomeViewModel::class.java)
 
         _binding = FragmentAdminHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val textView: TextView = binding.textAdminhome
-        AdminhomeViewModel.text.observe(viewLifecycleOwner) {
+        adminHomeViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
 
@@ -52,10 +52,23 @@ class AdminHomeFragment : Fragment() {
         binding.productImage.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_product)
         }
-// Set up click listener for category
         binding.categoryImage.setOnClickListener {
-            findNavController().navigate(R.id.action_home_to_category) // Thay đổi action_id để phù hợp với định tuyến của bạn
+            findNavController().navigate(R.id.action_home_to_category)
         }
+
+        // Set up click listener for logout
+        val logoutButton: Button = binding.btnLogout
+        logoutButton.setOnClickListener {
+            // Clear SharedPreferences or handle logout logic
+            val sharedPref = requireActivity().getSharedPreferences("UserPref", Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                clear()
+                apply()
+            }
+            // Navigate to login screen
+            findNavController().navigate(R.id.action_adminhome_to_login)
+        }
+
         return root
     }
 

@@ -1,4 +1,3 @@
-// HomeFragment.kt
 package com.example.quanlych.ui.home
 
 import android.os.Bundle
@@ -8,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ViewFlipper
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.quanlych.R
 import com.example.quanlych.data.DatabaseHelper
@@ -46,8 +46,12 @@ class HomeFragment : Fragment() {
         binding.recycleview.layoutManager = GridLayoutManager(context, 2) // 2 columns
         val adapter = ProductAdapter(products, object : ProductAdapter.OnItemClickListener {
             override fun onItemClick(product: Product) {
-                // Handle item click here
-                // For example: show a Toast or navigate to a detail screen
+                // Create a Bundle to pass product details
+                val bundle = Bundle().apply {
+                    putParcelable("product", product)
+                }
+                // Navigate to the product detail screen
+                findNavController().navigate(R.id.action_home_to_productdetails, bundle)
             }
         })
         binding.recycleview.adapter = adapter

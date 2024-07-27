@@ -14,6 +14,8 @@ import com.example.quanlych.data.UserRepository
 import com.example.quanlych.databinding.FragmentCartBinding
 import com.example.quanlych.model.Product
 import com.example.quanlych.utils.CartManager
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 
 class CartFragment : Fragment() {
 
@@ -31,7 +33,7 @@ class CartFragment : Fragment() {
         val root: View = binding.root
 
         // Retrieve user email from UserSession
-        val userEmail = UserRepository.UserSession.email
+        userEmail = UserRepository.UserSession.email
 
         cartAdapter = CartAdapter(
             CartManager.cartItems,
@@ -40,6 +42,26 @@ class CartFragment : Fragment() {
         )
         binding.recycleviewgiohang.layoutManager = LinearLayoutManager(context)
         binding.recycleviewgiohang.adapter = cartAdapter
+
+        // Setup ItemTouchHelper for swipe to delete
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                CartManager.cartItems.removeAt(position)
+                cartAdapter.notifyItemRemoved(position)
+                updateTotalPrice()
+                checkIfCartIsEmpty()
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(binding.recycleviewgiohang)
 
         updateTotalPrice()
         checkIfCartIsEmpty()

@@ -8,7 +8,7 @@ import com.example.quanlych.databinding.ItemCartBinding
 import com.example.quanlych.model.Product
 
 class CartAdapter(
-    private val products: List<Product>,
+    private val products: MutableList<Product>, // Use MutableList for easier item removal
     private val onQuantityChanged: (Product) -> Unit,
     private val onProductChecked: (Product, Boolean) -> Unit
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
@@ -23,6 +23,7 @@ class CartAdapter(
             Glide.with(binding.root)
                 .load(product.imageResource) // Replace with URL if using online images
                 .into(binding.productImage)
+
             binding.btnIncrement.setOnClickListener {
                 product.quantity++
                 binding.txtQuantity.text = product.quantity.toString()
@@ -55,4 +56,12 @@ class CartAdapter(
     }
 
     override fun getItemCount(): Int = products.size
+
+    // Method to remove item
+    fun removeItem(position: Int) {
+        if (position >= 0 && position < products.size) {
+            products.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
 }
