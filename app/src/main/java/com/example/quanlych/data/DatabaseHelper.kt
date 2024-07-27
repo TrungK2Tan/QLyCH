@@ -814,6 +814,16 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         return orders
     }
+    // Add this method in your DatabaseHelper class
+    fun updateProductQuantity(productId: Int, quantityToDeduct: Int) {
+        val db = this.writableDatabase
+        val query = "UPDATE SANPHAM SET SoLuong = SoLuong - ? WHERE MaSanPham = ?"
+        val statement = db.compileStatement(query)
+        statement.bindLong(1, quantityToDeduct.toLong())
+        statement.bindLong(2, productId.toLong())
+        statement.executeUpdateDelete()
+        db.close()
+    }
 
     fun updateOrder(order: Order): Boolean {
         val db = writableDatabase
@@ -1104,4 +1114,38 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
         return total.toDouble()
     }
+
+    fun searchCategories(query: String): List<Category> {
+        val categories = mutableListOf<Category>()
+        val db = readableDatabase
+
+        // Use parameterized query to prevent SQL injection
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_LOAISANPHAM WHERE TenLoaiSanPham LIKE ?",
+            arrayOf("%$query%")
+        )
+
+        // Get column indices
+        val idColumnIndex = cursor.getColumnIndex("MaLoaiSanPham")
+        val nameColumnIndex = cursor.getColumnIndex("TenLoaiSanPham")
+
+        // Check if columns exist
+        if (idColumnIndex == -1 || nameColumnIndex == -1) {
+            // Handle the error, e.g., log or throw an exception
+            throw IllegalArgumentException("Required columns are missing in the result set")
+        }
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(idColumnIndex)
+                val name = cursor.getString(nameColumnIndex)
+                categories.add(Category(id, name))
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return categories
+    }
+
+
 }

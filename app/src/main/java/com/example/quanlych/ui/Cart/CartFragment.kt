@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.quanlych.R
 import com.example.quanlych.adapter.CartAdapter
-import com.example.quanlych.data.User
 import com.example.quanlych.data.UserRepository
 import com.example.quanlych.databinding.FragmentCartBinding
 import com.example.quanlych.model.Product
@@ -22,7 +22,7 @@ class CartFragment : Fragment() {
     private var _binding: FragmentCartBinding? = null
     private val binding get() = _binding!!
     private lateinit var cartAdapter: CartAdapter
-    private var userEmail: String? = null // Change to store user email
+    private var userEmail: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,7 +32,6 @@ class CartFragment : Fragment() {
         _binding = FragmentCartBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Retrieve user email from UserSession
         userEmail = UserRepository.UserSession.email
 
         cartAdapter = CartAdapter(
@@ -56,7 +55,7 @@ class CartFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 CartManager.cartItems.removeAt(position)
-                cartAdapter.notifyItemRemoved(position)
+                cartAdapter.removeItem(position)
                 updateTotalPrice()
                 checkIfCartIsEmpty()
             }
@@ -67,16 +66,20 @@ class CartFragment : Fragment() {
         checkIfCartIsEmpty()
 
         binding.btnmuahang.setOnClickListener {
-            val totalPrice = calculateTotalPrice()
-            val selectedProducts = CartManager.cartItems.filter { it.isSelected }
+            if (isAnyProductSelected()) {
+                val totalPrice = calculateTotalPrice()
+                val selectedProducts = CartManager.cartItems.filter { it.isSelected }
 
-            val bundle = Bundle().apply {
-                putDouble("totalPrice", totalPrice)
-                putParcelableArrayList("selectedProducts", ArrayList(selectedProducts))
-                putString("userEmail", userEmail) // Use userEmail from UserSession
+                val bundle = Bundle().apply {
+                    putDouble("totalPrice", totalPrice)
+                    putParcelableArrayList("selectedProducts", ArrayList(selectedProducts))
+                    putString("userEmail", userEmail)
+                }
+
+                findNavController().navigate(R.id.action_nav_cart_to_nav_thanhtoan, bundle)
+            } else {
+                Toast.makeText(requireContext(), "Vui lòng chọn ít nhất một sản phẩm để thanh toán.", Toast.LENGTH_SHORT).show()
             }
-
-            findNavController().navigate(R.id.action_nav_cart_to_nav_thanhtoan, bundle)
         }
         return root
     }
@@ -112,5 +115,16 @@ class CartFragment : Fragment() {
             binding.txttongtien.visibility = View.VISIBLE
             binding.btnmuahang.visibility = View.VISIBLE
         }
+    }
+
+    private fun isAnyProductSelected(): Boolean {
+        return CartManager.cartItems.any { it.isSelected }
+    }
+
+    private fun addProductToCart(product: Product) {
+        CartManager.addProductToCart(product)
+        cartAdapter.notifyDataSetChanged()
+        updateTotalPrice()
+        checkIfCartIsEmpty()
     }
 }

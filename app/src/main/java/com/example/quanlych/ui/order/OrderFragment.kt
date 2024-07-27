@@ -60,7 +60,6 @@ class OrderFragment : Fragment() {
         val phoneNumber = binding.edtphone.text.toString().trim()
         val address = binding.edtdiachi.text.toString().trim()
 
-
         // Validate input
         if (phoneNumber.isEmpty() || address.isEmpty()) {
             Toast.makeText(requireContext(), "Vui lòng nhập số điện thoại và địa chỉ", Toast.LENGTH_SHORT).show()
@@ -79,9 +78,10 @@ class OrderFragment : Fragment() {
         // Insert order
         val orderId = databaseHelper.addOrder(userId, currentDate, totalPrice, address, phoneNumber, 1) // 1 is default payment method
 
-        // Insert order details
+        // Insert order details and update product quantities
         for (product in selectedProducts) {
             databaseHelper.addOrderDetail(orderId, product.id, product.quantity, product.price)
+            databaseHelper.updateProductQuantity(product.id, product.quantity)
         }
 
         Toast.makeText(requireContext(), "Đặt hàng thành công", Toast.LENGTH_SHORT).show()

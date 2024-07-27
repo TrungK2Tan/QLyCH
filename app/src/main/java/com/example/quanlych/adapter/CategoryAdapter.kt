@@ -1,4 +1,3 @@
-// CategoryAdapter.kt
 package com.example.quanlych.ui.category
 
 import android.view.LayoutInflater

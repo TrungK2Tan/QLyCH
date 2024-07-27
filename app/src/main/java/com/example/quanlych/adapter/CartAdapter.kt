@@ -8,7 +8,7 @@ import com.example.quanlych.databinding.ItemCartBinding
 import com.example.quanlych.model.Product
 
 class CartAdapter(
-    private val products: MutableList<Product>, // Use MutableList for easier item removal
+    private val products: MutableList<Product>,
     private val onQuantityChanged: (Product) -> Unit,
     private val onProductChecked: (Product, Boolean) -> Unit
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
@@ -57,11 +57,16 @@ class CartAdapter(
 
     override fun getItemCount(): Int = products.size
 
-    // Method to remove item
     fun removeItem(position: Int) {
-        if (position >= 0 && position < products.size) {
+        if (position in products.indices) {
             products.removeAt(position)
             notifyItemRemoved(position)
+            notifyItemRangeChanged(position, itemCount - position) // Adjust the range after removal
         }
+    }
+
+    // Method to update an item in the list
+    fun updateItem(position: Int) {
+        notifyItemChanged(position)
     }
 }

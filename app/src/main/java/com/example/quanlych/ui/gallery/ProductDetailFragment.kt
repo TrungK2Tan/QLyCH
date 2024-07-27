@@ -1,4 +1,3 @@
-// ProductDetailFragment.kt
 package com.example.quanlych.ui.gallery
 
 import android.os.Bundle
@@ -45,7 +44,6 @@ class ProductDetailFragment : Fragment() {
 
         productName.text = product.name
         productPrice.text = "${product.price}VND"
-        // Use Glide or another library to load images from resources or URLs
         Glide.with(this)
             .load(product.imageResource) // Replace with URL if using online images
             .into(productImage) // Replace with actual image loading logic
@@ -56,20 +54,20 @@ class ProductDetailFragment : Fragment() {
         btnIncrement.setOnClickListener {
             quantity++
             txtQuantity.text = quantity.toString()
-            txtTotalPrice.text = "Total: ${String.format("%.2f", product.price * quantity)}đ"
+            txtTotalPrice.text = "Tổng Tiền: ${String.format("%.2f", product.price * quantity)}đ"
         }
 
         btnDecrement.setOnClickListener {
             if (quantity > 1) {
                 quantity--
                 txtQuantity.text = quantity.toString()
-                txtTotalPrice.text = "Total: ${String.format("%.2f", product.price * quantity)}đ"
+                txtTotalPrice.text = "Tổng Tiền: ${String.format("%.2f", product.price * quantity)}đ"
             }
         }
 
         addToCartButton.setOnClickListener {
             val cartProduct = product.copy(quantity = quantity) // Update the product with the selected quantity
-            CartManager.cartItems.add(cartProduct) // Add the product to the cart
+            CartManager.addProductToCart(cartProduct) // Add or update the product in the cart
             Toast.makeText(context, "Thêm vào giỏ hàng với số lượng $quantity", Toast.LENGTH_SHORT).show()
             findNavController().navigate(R.id.action_productdetails_to_cart) // Navigate to CartFragment
         }
